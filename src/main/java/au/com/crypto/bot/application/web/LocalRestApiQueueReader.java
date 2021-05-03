@@ -42,7 +42,7 @@ public class LocalRestApiQueueReader extends QueueReader {
      * @return
      * @throws URISyntaxException
      */
-    @PostMapping(value = "/event", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/sendEvent", consumes = "application/json", produces = "application/json")
     public String processEvent(@RequestBody String payload, HttpServletResponse response)
             throws URISyntaxException {
 
