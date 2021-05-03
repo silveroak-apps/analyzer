@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/tmp/signal-catcher.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>/tmp/signal-catcher-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>2MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="au.com.crypto.bot" level="INFO">
+        <appender-ref ref="rollingFile" />
+    </logger>
+
+
+    <!--<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">-->
+    <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
+    <!--<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>-->
+    <!--</layout>-->
+    <!--</appender>-->
+
+    <!--<logger name="au.com.crypto.bot.application" level="INFO"/>-->
+
+    <!--<root level="INFO">-->
+    <!--<appender-ref ref="STDOUT" />-->
+    <!--</root>-->
+</configuration>

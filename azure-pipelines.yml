@@ -1,0 +1,32 @@
+trigger:
+- develop
+- feature/*
+
+pool: default
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    goals: 'package'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'cryptobotregistry-bsn-group'
+    repository: 'signal-catcher'
+    command: 'buildAndPush'
+    Dockerfile: 'Dockerfile'
+    tags: |
+      $(Build.SourceVersion)
+      latest
+
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'run.sh'
+    ArtifactName: 'Release_Script'
+    publishLocation: 'Container'

@@ -1,0 +1,52 @@
+{
+  "strategies":[
+    {
+      "strategyPairName": "strategy_long_bsn_greendot_5m_bnbperp",
+      "positionType": "LONG",
+      "exchangeType": "futures",
+      "symbol": "BNBUSD_PERP",
+      "source": "TradingView",
+      "openStrategy": {
+        "strategyName": "bsn_greendot_long_open_5m_bnbperp",
+        "conditions": [
+          {
+            "name": "buy_bsn_greendot_strat_5m_BNB",
+            "lastObserved": "5m",
+            "timeFrame": "5m",
+            "symbol": "BNBUSD_PERP",
+            "category": "bsndot",
+            "sequence": 1
+          }
+        ]
+      },
+      "closeStrategies" : [
+        {
+          "strategyName": "bsn_greendot_long_close_5m_bnbperp",
+          "conditions": [
+            {
+              "name": "sell_bsn_greendot_strat_5m_BNB",
+              "lastObserved": "10m",
+              "timeFrame": "5m",
+              "symbol": "BNBUSD_PERP",
+              "category": "bsndot",
+              "sequence": 1
+            }
+          ]
+        },
+        {
+          "strategyName": "sell_analyser_close_bnbusd_perp",
+          "conditions": [
+            {
+              "name": "sell_analyser_close_bnbusd_perp_trailing_stop_loss_long",
+              "lastObserved": "10m",
+              "timeFrame": "1m",
+              "symbol": "BNBUSD_PERP",
+              "category": "Stoploss",
+              "sequence": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

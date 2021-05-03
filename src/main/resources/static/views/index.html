@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="ISO-8859-1">
+
+    <script  type="text/javascript" language="javascript" src="js/lib/angular.min.js"></script>
+    <script  type="text/javascript" language="javascript" src="js/lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script  type="text/javascript" language="javascript" src="js/app/app.js"></script>
+    <script  type="text/javascript" language="javascript" src="js/app/SignalController.js"></script>
+    <script  type="text/javascript" language="javascript"  src="js/app/SignalService.js"></script>
+    <script  type="text/javascript" language="javascript"  src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script  type="text/javascript" language="javascript"  src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script  type="text/javascript" language="javascript" src="js/app/sum.js"></script>
+
+    <script type="text/javascript" class="init">
+        function roundNumber(num, dec) {
+            var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
+            return result;
+        }
+
+        $(document).ready(function() {
+            alert("Load Signals");
+            $('#signals').DataTable(
+                {
+                    "order": [[ 8, "desc" ]],
+                    "footerCallback": function ( row, data, start, end, display ) {
+                        var api = this.api(), data;
+
+                        // Remove the formatting to get integer data for summation
+                        var intVal = function ( i ) {
+                            return typeof i === 'string' ?
+                                i.replace(/[\$,]/g, '')*1 :
+                                typeof i === 'number' ?
+                                    i : 0;
+                        };
+
+                        // Total over all pages
+                        total3 = api
+                            .column( 3 )
+                            .data()
+                            .reduce( function (a, b) {
+                                return roundNumber(intVal(a) + intVal(b),2);
+                            }, 0 );
+
+                        // Total over this page
+                        pageTotal3 = api
+                            .column( 3, { page: 'current'} )
+                            .data()
+                            .reduce( function (a, b) {
+                                return roundNumber(intVal(a) + intVal(b),2);
+                            }, 0 );
+
+                        // Update footer
+                        $( api.column( 3 ).footer() ).html(
+                            ''+pageTotal3 +'%'
+                        );
+
+                        // Total over all pages
+                        total5 = api
+                            .column( 5 )
+                            .data()
+                            .reduce( function (a, b) {
+                                return roundNumber(intVal(a) + intVal(b),2);
+                            }, 0 );
+
+                        // Total over this page
+                        pageTotal5 = api
+                            .column( 5, { page: 'current'} )
+                            .data()
+                            .reduce( function (a, b) {
+                                return roundNumber(intVal(a) + intVal(b),2);
+                            }, 0 );
+
+                        // Update footer
+                       $( api.column( 5 ).footer() ).html(
+                           ''+pageTotal5 +'%'
+                       );
+                    }
+                } );
+        } );
+
+    </script>
+        <title>Main Page</title>
+</head>
+<body ng-app="bot" >
+<hr/>
+<div class="fw-container" ng-controller="SignalController">
+<div class="container" data-ng-init="getSignals()">
+    <div class="row">
+        <button ng-click="getSignals()" class="btn btn-sm btn-info">Reload Signals</button>
+    </div>
+    <hr/>
+    <hr/>
+    <div class="fw-body">
+    <div class="content">
+        <table id="signals" class="display" style="width:100%">
+            <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Buy Price</th>
+                <th>Current Price</th>
+                <th>Current Gain %</th>
+                <th>Sell Price</th>
+                <th>Sold Gain %</th>
+                <th>Status</th>
+                <th>Strategy</th>
+                <th>Buy Date</th>
+                <th>Sell Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="signal in allSignals">
+                <td>{{signal.symbol}}</td>
+                <td>{{signal.buyPrice}}</td>
+                <td>{{signal.currentPrice}}</td>
+                <td>{{signal.currentGainPercent}}</td>
+                <td>{{signal.sellPrice}}</td>
+                <td>{{signal.soldGainPercent}}</td>
+                <td>{{signal.status}}</td>
+                <td>{{signal.conditionsGroup}}</td>
+                <td>{{signal.buyDate}}</td>
+                <td>{{signal.sellDate}}</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <th>Symbol</th>
+                <th>Buy Price</th>
+                <th>Current Price</th>
+                <th>Current Gain %</th>
+                <th>Sell Price</th>
+                <th>Sold Gain %</th>
+                <th>Status</th>
+                <th>Strategy</th>
+                <th>Buy Date</th>
+                <th>Sell Date</th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+</div>
+
+</div>
+
+</body>
+
+
+<link rel="stylesheet" href="css/lib/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+<link rel="stylesheet" href="css/app/app.css"/>
+</html>

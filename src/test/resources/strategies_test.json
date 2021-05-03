@@ -1,0 +1,64 @@
+{
+  "strategies":[
+    {
+      "name":"strategyOne",
+      "source":"TradingView",
+      "trade_type": "OPEN",
+      "position_type": "LONG",
+      "exchange_type": "futures",
+      "conditions":[
+        {
+          "name":"3bar_6h_alert",
+          "last_observed":"6h",
+          "time_frame": "6h",
+          "symbol": "BTCUSDT",
+          "sequence": 1
+        },
+        {
+          "name":"2wave_cross_5m_alert",
+          "last_observed":"15m",
+          "time_frame": "5m",
+          "symbol": "BTCUSDT",
+          "sequence": 2
+        },
+        {
+          "name":"moneyflow_1m_alert",
+          "last_observed":"1m",
+          "time_frame": "1m",
+          "symbol": "BTCUSDT",
+          "sequence": 3
+        }
+      ]
+    },
+    {
+      "name":"strategyTwo",
+      "source":"TradingView",
+      "trade_type": "OPEN",
+      "position_type": "LONG",
+      "exchange_type": "futures",
+      "conditions":[
+        {
+          "name":"3bar_6h_alert",
+          "last_observed":"6h",
+          "symbol": "BTCUSDT",
+          "time_frame": "6h",
+          "sequence": 1
+        },
+        {
+          "name":"2wave_cross_2m_alert",
+          "last_observed":"5m",
+          "time_frame": "2m",
+          "symbol": "BTCUSDT",
+          "sequence": 2
+        },
+        {
+          "name":"moneyflow_1m_alert",
+          "last_observed":"1h",
+          "time_frame": "1h",
+          "symbol": "BTCUSDT",
+          "sequence": 3
+        }
+      ]
+    }
+  ]
+}
