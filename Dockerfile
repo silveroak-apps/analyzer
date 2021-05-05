@@ -26,7 +26,7 @@ COPY healthcheck.sh /app/healthcheck.sh
 RUN chmod +x /usr/local/bin/aws
 RUN chmod +x /app/run_java.sh
 RUN chmod +x /app/healthcheck.sh
-CMD /app/run_java.sh ${environment} ${signalqueue}
+CMD /app/run_java.sh ${signalqueue}
 
 EXPOSE 8090
 
