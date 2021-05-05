@@ -1,10 +1,7 @@
 #!/bin/bash
 
-mv /app/applicationContext_$1.xml /app/applicationContext.xml
-mv /app/app_$1.properties /app/app.properties
-jar uf analyzer-1.0-SNAPSHOT.jar /app/applicationContext.xml
-
 aws sqs list-queues > /app/allqueues.json
+cat /app/allqueues.json
 if grep -q $2 /app/allqueues.json;
 then
     echo "Queue $2 found in aws account"
@@ -26,4 +23,6 @@ else
     --parameters ParameterKey=queueName,ParameterValue="$2" \
     --capabilities CAPABILITY_NAMED_IAM
 fi
+
+java --version
 java --enable-preview -jar -server -Dapp.props=/app/app.properties -XX:MetaspaceSize=100m -Xms128m -Xmx512m -XX:NewSize=200m -XX:MaxNewSize=300m -XX:+UseG1GC -XX:+UseStringDeduplication /app/analyzer-1.0-SNAPSHOT.jar $2

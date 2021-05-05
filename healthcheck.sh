@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Check if Analyzer is running
-if ps -ef | grep "Analyzer" > /dev/null
+# Check if analyzer is running
+if ps -ef | grep "analyzer" > /dev/null
 then
     echo "0"
 else

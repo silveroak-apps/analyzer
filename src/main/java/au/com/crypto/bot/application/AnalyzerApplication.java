@@ -113,7 +113,7 @@ public class AnalyzerApplication {
                 //Starting aws queue reader
                 new PollAWSSQSService(ac, queue_name).getMessages();
             } catch (Exception e) {
-                Log.error(e, "Error in launching queue");
+                Log.warning(e, "Error in connecting AWS queue, system will use local queue");
             }
             if (props.get("exchangeType") != null)
                 exchangeType = props.get("exchangeType");
