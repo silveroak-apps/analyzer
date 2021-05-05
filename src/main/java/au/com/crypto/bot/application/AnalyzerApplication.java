@@ -124,7 +124,7 @@ public class AnalyzerApplication {
                 new ClosePositionAnalyzer(ac, trader);
             } else if (exchangeType.equalsIgnoreCase(CONSTANTS._spot)) {
                 new SpotBuyAnalyzer(ac, trader);
-            } else if (exchangeType.equalsIgnoreCase("all")) {
+            } else if (exchangeType.equalsIgnoreCase("ALL")) {
                 new OpenPositionAnalyzer(ac, trader);
                 new ClosePositionAnalyzer(ac, trader);
                 new SpotBuyAnalyzer(ac, trader);
