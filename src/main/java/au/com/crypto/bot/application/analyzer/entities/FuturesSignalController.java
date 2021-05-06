@@ -61,7 +61,7 @@ public class FuturesSignalController {
 					   where symbol = :symbol 
 					   and exchange_id = :exchangeId
 					   and position_type = :positionType
-					   and signal_status in ('ENDED', 'CREATED')
+					   and signal_status in ( 'ACTIVE', 'CREATED')
 					   and pending_commands_count = 0
 					   order by signal_id desc limit 1
 					   """;

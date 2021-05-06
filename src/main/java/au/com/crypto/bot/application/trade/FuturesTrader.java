@@ -8,6 +8,7 @@ import au.com.crypto.bot.application.utils.LoadConfigs;
 import com.google.gson.Gson;
 import serilogj.Log;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +27,7 @@ public class FuturesTrader extends TraderImpl {
     }
 
     @Override
+    @Transactional
     public void raiseSignal(ApplicationControllers ac, long existingSignalId, double price, String symbol,
                             String tradeType,
                             String positionType, Strategies.ConditionsGroup conditionsGroup, String strategyPairName,
@@ -33,40 +35,11 @@ public class FuturesTrader extends TraderImpl {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName);
-            Log.information("{@Application} Successfully posted a signal command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId);
+            Log.information("{@Application} Successfully posted a signal command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
         }
-        if (tradeType.equalsIgnoreCase(CONSTANTS._open)) {
-            if (isPositionOpen(ac, signalId)) {
-
-                saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, contracts);
-                Log.information("{@Application} Successfully posted a command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId);
-            } else {
-                Log.information("{@Application} Command already placed for @{Symbol} with signal id @{SignalId} for action type {Action}" +
-                        "", "Analyzer", symbol, signalId, tradeType);
-            }
-        }
-
-        if (tradeType.equalsIgnoreCase(CONSTANTS._close)) {
-            saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, contracts);
-            Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId);
-        }
-
+        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, contracts);
+        Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);
     }
-
-    //Signal Status not ACTIVE OR signal status ACTIVE AND not OPEN
-    private boolean isPositionOpen(ApplicationControllers ac, long signalId) {
-        FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
-        List<FuturesSignal> fscCommand = fscController.findFuturePositionsWithSignal(signalId);
-        return !fscCommand.isEmpty();
-    }
-
-    //trade type can be OPEN, CLOSE, INCREASE ..
-    private boolean isSignalCommandAlreadyPlaced(ApplicationControllers ac, String jsonHash, long signalId, String tradeType) {
-        FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
-        List<FuturesSignalCommand> fscCommand = fscController.finSignalsBySignalNHashNTradeAction(jsonHash, signalId, tradeType);
-        return !fscCommand.isEmpty();
-    }
-
 
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
                                          String symbol, double price, String tradeType,
