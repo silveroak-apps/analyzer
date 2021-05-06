@@ -39,7 +39,7 @@ public class FuturesTrader extends TraderImpl {
             if (isPositionOpen(ac, signalId)) {
 
                 saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, contracts);
-                Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId);
+                Log.information("{@Application} Successfully posted a command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId);
             } else {
                 Log.information("{@Application} Command already placed for @{Symbol} with signal id @{SignalId} for action type {Action}" +
                         "", "Analyzer", symbol, signalId, tradeType);

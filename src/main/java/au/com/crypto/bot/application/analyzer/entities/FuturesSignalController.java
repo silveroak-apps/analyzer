@@ -61,7 +61,8 @@ public class FuturesSignalController {
 					   where symbol = :symbol 
 					   and exchange_id = :exchangeId
 					   and position_type = :positionType
-					   and signal_status in ('ENDED', 'EXPIRED')
+					   and signal_status in ('ENDED', 'CREATED')
+					   and pending_commands_count = 0
 					   order by signal_id desc limit 1
 					   """;
 
@@ -85,6 +86,7 @@ public class FuturesSignalController {
 					   where symbol = :symbol 
 					   and exchange_id = :exchangeId
 					   and position_type = :positionType
+					   and pending_commands_count = 0
 					   and signal_status = 'ACTIVE'
 					  """;
 		return findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType);
