@@ -94,7 +94,7 @@ public class FuturesTrader extends TraderImpl {
                         "with Position Type {PositionType}" +
                         "with Strategy name {Strategy}" +
                         "with contract multiplier {Multiplier}" +
-                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName,multiplier, leverage);
+                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, multiplier, leverage);
             } else {
                 Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Balance: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol));
             }
@@ -109,7 +109,6 @@ public class FuturesTrader extends TraderImpl {
                     "with contract multiplier {Multiplier}" +
                     "with Leverage {Leverage}", "Analyzer", symbol, signalId, eventContracts, tradeType, strategyPairName, multiplier, leverage);
         }
-
     }
 
     private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName) {

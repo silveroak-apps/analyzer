@@ -61,7 +61,7 @@ public class FuturesSignalController {
 					   where symbol = :symbol 
 					   and exchange_id = :exchangeId
 					   and position_type = :positionType
-					   and signal_status <> 'INACTIVE'
+					   and signal_status in ('ENDED', 'EXPIRED')
 					   order by signal_id desc limit 1
 					   """;
 
