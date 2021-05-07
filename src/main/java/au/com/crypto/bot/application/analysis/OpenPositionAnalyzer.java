@@ -63,18 +63,18 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                             //Adding processed symbol to map
                             lastSignal.put(symbol, new Date());
                             if (openSignals.isEmpty() && !processedEvents.contains(marketEvent.getId())) {
-                                    trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
-                                            CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                                            props, marketEvent.getMarket(), marketEvent.getContracts());
-                                    Log.information("No Open Signals on this symbol {Symbol} for the {Event} ",
-                                            symbol, marketEvent.getName());
-                                    // Adding processed event to avoid duplicated entries
-                                    processedEvents.add(marketEvent.getId());
+                                trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
+                                        CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
+                                        props, marketEvent.getMarket(), marketEvent.getContracts());
+                                Log.information("No Open Signals on this symbol {Symbol} for the {Event} ",
+                                        symbol, marketEvent.getName());
+                                // Adding processed event to avoid duplicated entries
+                                processedEvents.add(marketEvent.getId());
 
-                            } else {
-                                    trader.raiseSignal(ac, openSignals.get(0).getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
-                                            CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                                            props, marketEvent.getMarket(), marketEvent.getContracts());
+                            } else if (!openSignals.isEmpty()) {
+                                trader.raiseSignal(ac, openSignals.get(0).getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
+                                        CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
+                                        props, marketEvent.getMarket(), marketEvent.getContracts());
 
                                 Log.information("{Application} Found an existing in active signal - {Strategy}" +
                                                 "--- Position Status {PositionStatus}" +
@@ -93,6 +93,8 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                                         , openSignals.get(0).getUpdatedDateTime()
                                         , openSignals.get(0).getCreatedDateTime()
                                 );
+                            } else {
+                                Log.information("Event already processed {Symbol} for the {Event} and id {Id}", symbol, marketEvent.getName(), marketEvent.getId());
                             }
                         } catch (Exception e) {
                             Log.error(e, "{Application} Error occurred in {class}: in placing a signal ", "Analyzer",
