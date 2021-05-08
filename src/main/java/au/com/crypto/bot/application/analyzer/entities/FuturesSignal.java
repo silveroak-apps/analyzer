@@ -59,6 +59,9 @@ public class FuturesSignal {
     @Transient
     private double positionSize;
 
+    @Transient
+    private String signalStatus;
+
 
     public String getStrategyPairName() {
         return strategyPairName;
@@ -130,5 +133,13 @@ public class FuturesSignal {
 
     public void setPositionSize(double positionSize) {
         this.positionSize = positionSize;
+    }
+
+    public String getSignalStatus() {
+        return signalStatus;
+    }
+
+    public void setSignalStatus(String signalStatus) {
+        this.signalStatus = signalStatus;
     }
 }

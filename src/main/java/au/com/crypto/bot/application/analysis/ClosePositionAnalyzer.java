@@ -62,6 +62,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                                         CONSTANTS._close, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                         props, marketEvent.getMarket(), marketEvent.getContracts());
                                 Log.information("{Application} Found an existing signal raising a new command close Strategy - {Strategy}" +
+                                                "--- Signal Status {SignalStatus}" +
                                                 "--- Position Status {PositionStatus}" +
                                                 "--- Symbol {Symbol}" +
                                                 "--- Position Type {PositionType}" +
@@ -70,6 +71,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                                                 "--- Updated time {UpdatedTime}" +
                                                 "--- Created time {CreatedTime}",
                                         "Analyzer", conditionsGroup.getConditionsName()
+                                        , openSignals.get(0).getSignalStatus()
                                         , openSignals.get(0).getPositionStatus()
                                         , openSignals.get(0).getSymbol()
                                         , openSignals.get(0).getPositionType()
@@ -80,7 +82,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                                 );
                                 processedEvents.add(marketEvent.getId());
                             } else {
-                                Log.information("Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as there are no active signals ",
+                                Log.information("Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as the market event is already processed ",
                                         symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
                         } catch (Exception e) {
@@ -97,7 +99,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                     //TODO: need to do trailing stop loss
                 }
 
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             }
         } catch (Exception e) {
             Log.error(e, "{@Application} Error occurred in {class}: ", "Analyzer",

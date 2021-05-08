@@ -66,7 +66,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                                 trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                                         CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                         props, marketEvent.getMarket(), marketEvent.getContracts());
-                                Log.information("No Open Signals on this symbol {Symbol} for the {Event} ",
+                                Log.information("No Open Signals on this symbol {Symbol} for the {Event} and raised a new signal",
                                         symbol, marketEvent.getName());
                                 // Adding processed event to avoid duplicated entries
                                 processedEvents.add(marketEvent.getId());
@@ -76,7 +76,8 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
 //                                        CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
 //                                        props, marketEvent.getMarket(), marketEvent.getContracts());
 
-                                Log.information("{Application} Found an existing in active signal - {Strategy}" +
+                                Log.information("{Application} Found an active / created / unknown signal - {Strategy}" +
+                                                "--- Signal Status {SignalStatus}" +
                                                 "--- Position Status {PositionStatus}" +
                                                 "--- Symbol {Symbol}" +
                                                 "--- Position Type {PositionType}" +
@@ -85,6 +86,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                                                 "--- Updated time {UpdatedTime}" +
                                                 "--- Created time {CreatedTime}",
                                         "Analyzer", conditionsGroup.getConditionsName()
+                                        , openSignals.get(0).getSignalStatus()
                                         , openSignals.get(0).getPositionStatus()
                                         , openSignals.get(0).getSymbol()
                                         , openSignals.get(0).getPositionType()

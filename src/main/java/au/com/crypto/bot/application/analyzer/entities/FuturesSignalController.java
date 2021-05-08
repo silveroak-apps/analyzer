@@ -56,13 +56,12 @@ public class FuturesSignalController {
 
 		String query = """
 					   select signal_id, symbol, position_type, 
-					   position_status, (executed_buy_qty - executed_sell_qty) as position_size
+					   position_status, (executed_buy_qty - executed_sell_qty) as position_size, signal_status
 					   from futures_positions
 					   where symbol = :symbol 
 					   and exchange_id = :exchangeId
 					   and position_type = :positionType
-					   and signal_status in ( 'ACTIVE', 'CREATED')
-					   and pending_commands_count = 0
+					   and signal_status in ( 'ACTIVE', 'CREATED', 'UNKNOWN' )
 					   order by signal_id desc limit 1
 					   """;
 
@@ -81,12 +80,11 @@ public class FuturesSignalController {
 
 		String query = """
 					   select signal_id, symbol, position_type, 
-					   position_status, (executed_buy_qty - executed_sell_qty) as position_size 
+					   position_status, (executed_buy_qty - executed_sell_qty) as position_size, signal_status 
 					   from futures_positions
 					   where symbol = :symbol 
 					   and exchange_id = :exchangeId
 					   and position_type = :positionType
-					   and pending_commands_count = 0
 					   and signal_status = 'ACTIVE'
 					  """;
 		return findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType);
@@ -109,6 +107,7 @@ public class FuturesSignalController {
 			fs.setPositionType((String)obj[2]);
 			fs.setPositionStatus((String)obj[3]);
 			fs.setPositionSize(((BigDecimal)obj[4]).doubleValue());
+			fs.setSignalStatus((String)obj[5]);
 			listFS.add(fs);
 		}
 
