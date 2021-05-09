@@ -33,18 +33,41 @@ public class PollAWSSQSService extends QueueReader {
             = Executors.newSingleThreadExecutor();
 
     public void getMessages() {
-        executor.submit(() -> {
-            while (true) {
-                getSQSMessages();
-                try {
-                    Thread.sleep(2000);
-                } catch (Exception e) {
-                    LogUtil.printLog(logger, LogUtil.STATUS.ERROR.name(), PollAWSSQSService.class.getSimpleName(), "Exception in executing sleep " + e);
-                    Log.error(e, "Exception in executing sleep");
+        if (isQueueExists()) {
+            executor.submit(() -> {
+                while (true) {
+                    getSQSMessages();
+                    try {
+                        Thread.sleep(2000);
+                    } catch (Exception e) {
+                        LogUtil.printLog(logger, LogUtil.STATUS.ERROR.name(), PollAWSSQSService.class.getSimpleName(), "Exception in executing sleep " + e);
+                        Log.error(e, "Exception in executing sleep");
+                    }
                 }
-            }
 
-        });
+            });
+        }else {
+            Log.warning("Specified queue isn't exist in AWS, system will use local queue");
+        }
+
+    }
+
+    private boolean isQueueExists() {
+        SqsClient sqsClient = SqsClient.builder()
+                .region(Region.AP_SOUTHEAST_2)
+                .build();
+        try {
+
+            GetQueueUrlRequest getQueueRequest = GetQueueUrlRequest.builder()
+                    .queueName(QUEUE_NAME)
+                    .build();
+
+            String queueUrl = sqsClient.getQueueUrl(getQueueRequest).queueUrl();
+        } catch (QueueNameExistsException | QueueDoesNotExistException e) {
+            Log.error(e, "Error in getting messages from queue, queue may not be exist");
+            return false;
+        }
+        return true;
     }
 
     public PollAWSSQSService(ApplicationControllers ac, String queueName) {
@@ -57,35 +80,44 @@ public class PollAWSSQSService extends QueueReader {
     }
 
     public void getSQSMessages() {
+        try {
 
-        SqsClient sqsClient = SqsClient.builder()
-                .region(Region.AP_SOUTHEAST_2)
-                .build();
+            SqsClient sqsClient = SqsClient.builder()
+                    .region(Region.AP_SOUTHEAST_2)
+                    .build();
+            try {
 
-        GetQueueUrlRequest getQueueRequest = GetQueueUrlRequest.builder()
-                .queueName(QUEUE_NAME)
-                .build();
+                GetQueueUrlRequest getQueueRequest = GetQueueUrlRequest.builder()
+                        .queueName(QUEUE_NAME)
+                        .build();
 
-        String queueUrl = sqsClient.getQueueUrl(getQueueRequest).queueUrl();
+                String queueUrl = sqsClient.getQueueUrl(getQueueRequest).queueUrl();
 
-        // Receive messages from the queue
-        ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
-                .maxNumberOfMessages(10)
-                .waitTimeSeconds(20)
-                .queueUrl(queueUrl)
-                .attributeNamesWithStrings("All")
-                .build();
-        List<Message> messages = sqsClient.receiveMessage(receiveRequest).messages();
-        LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Number of messages in queue =  @{QueueLength}", messages.size());
-        // Print out the messages
-        for (Message m : messages) {
-            LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Message from AWS queue" + m.body());
-            processMessage(m);
-            LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Processing finished and deleting message -- " + m.messageId());
-            deleteMessageFromQueue(sqsClient, queueUrl, m);
+                // Receive messages from the queue
+                ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
+                        .maxNumberOfMessages(1)
+                        .waitTimeSeconds(2)
+                        .queueUrl(queueUrl)
+                        .attributeNamesWithStrings("All")
+                        .build();
+                List<Message> messages = sqsClient.receiveMessage(receiveRequest).messages();
+                LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Number of messages in queue =  @{QueueLength}", messages.size());
+                // Print out the messages
+                for (Message m : messages) {
+                    LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Message from AWS queue" + m.body());
+                    processMessage(m);
+                    LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Processing finished and deleting message -- " + m.messageId());
+                    deleteMessageFromQueue(sqsClient, queueUrl, m);
+                }
+            } catch (QueueNameExistsException e) {
+                Log.error(e, "Error in getting messages from queue, queue may not be exist");
+                throw e;
+            }
+        } catch (Exception e) {
+            LogUtil.printLog(logger, LogUtil.STATUS.ERROR.name(), PollAWSSQSService.class.getSimpleName(), "Exception in executing method" + e);
+            Log.error(e, "Error in getting messages from AWS queue");
+            e.printStackTrace();
         }
-
-
     }
 
     /**
@@ -119,7 +151,7 @@ public class PollAWSSQSService extends QueueReader {
                     epoch,
                     messageJson.toString());
         } catch (Exception e) {
-            Log.error(e, "Error in processing message from AWS queue -> ", m.messageId());
+            Log.error(e, "Error in processing message from queue -> ", m.messageId());
         }
     }
 
@@ -139,6 +171,17 @@ public class PollAWSSQSService extends QueueReader {
                 .receiptHandle(message.receiptHandle())
                 .build();
         sqsClient.deleteMessage(deleteMessageRequest);
+    }
+
+    public void run() {
+
+    }
+
+    /**
+     * this is only for testing
+     */
+    public PollAWSSQSService() {
+
     }
 
 }
