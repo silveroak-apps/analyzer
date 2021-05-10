@@ -38,7 +38,7 @@ public class PollAWSSQSService extends QueueReader {
                 while (true) {
                     getSQSMessages();
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     } catch (Exception e) {
                         LogUtil.printLog(logger, LogUtil.STATUS.ERROR.name(), PollAWSSQSService.class.getSimpleName(), "Exception in executing sleep " + e);
                         Log.error(e, "Exception in executing sleep");
@@ -95,8 +95,8 @@ public class PollAWSSQSService extends QueueReader {
 
                 // Receive messages from the queue
                 ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
-                        .maxNumberOfMessages(1)
-                        .waitTimeSeconds(2)
+                        .maxNumberOfMessages(10)
+                        .waitTimeSeconds(20)
                         .queueUrl(queueUrl)
                         .attributeNamesWithStrings("All")
                         .build();
