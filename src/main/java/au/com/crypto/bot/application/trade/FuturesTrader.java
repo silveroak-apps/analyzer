@@ -37,13 +37,13 @@ public class FuturesTrader extends TraderImpl {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName);
             Log.information("{@Application} Successfully posted a signal command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
         }
-        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, contracts);
+        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts);
         Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);
     }
 
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
                                          String symbol, double price, String tradeType,
-                                         Strategies.ConditionsGroup conditionsGroup, int eventContracts) {
+                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts) {
         FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
         FuturesSignalCommand fsCommand = new FuturesSignalCommand();
         fsCommand.setSignalId(signalId);
@@ -59,29 +59,34 @@ public class FuturesTrader extends TraderImpl {
         if (eventContracts <= 0) {
             double contracts = getDefaultContractsFromDB(ac, symbol);
             if (contracts != 0) {
-                double multiplier = getContractMultiplierFromDB(ac, symbol);
-                fsCommand.setQuantity(BigDecimal.valueOf(contracts * multiplier));
+                fsCommand.setQuantity(BigDecimal.valueOf(
+                        getContractsByMarket(market, contracts , price)
+                ));
                 fscController.save(fsCommand);
                 Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
                         "with Contracts {Contracts}" +
                         "with Position Type {PositionType}" +
                         "with Strategy name {Strategy}" +
                         "with contract multiplier {Multiplier}" +
-                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, multiplier, leverage);
+                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, leverage);
             } else {
                 Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Balance: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol));
             }
         } else {
-            double multiplier = getContractMultiplierFromDB(ac, symbol);
-            fsCommand.setQuantity(BigDecimal.valueOf(eventContracts * multiplier));
+            fsCommand.setQuantity(BigDecimal.valueOf(
+                    getContractsByMarket(market, eventContracts , price)
+            ));
             fscController.save(fsCommand);
             Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
                     "with Contracts {Contracts}" +
                     "with Position Type {PositionType}" +
                     "with Strategy name {Strategy}" +
-                    "with contract multiplier {Multiplier}" +
-                    "with Leverage {Leverage}", "Analyzer", symbol, signalId, eventContracts, tradeType, strategyPairName, multiplier, leverage);
+                    "with Leverage {Leverage}", "Analyzer", symbol, signalId, eventContracts, tradeType, strategyPairName,  leverage);
         }
+    }
+
+    private int getContractsByMarket(String market, double contracts, double price) {
+        return (int) Math.round(market.equalsIgnoreCase("USDT") ? contracts : (contracts * price) / 10);
     }
 
     private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName) {

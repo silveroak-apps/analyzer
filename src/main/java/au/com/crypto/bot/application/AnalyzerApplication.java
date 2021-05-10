@@ -13,6 +13,7 @@ import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.LogUtil;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import au.com.crypto.bot.application.web.PollAWSSQSService;
+import io.advantageous.boon.core.Str;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,17 +45,21 @@ public class AnalyzerApplication {
     static boolean isSimulation = false;
     static boolean isTradingView = true;
     static String exchangeType = "";
-    static String queue_name = "signal_webhook_test";
 
     static String seqHost = "http://localhost:5341";
 
     public static void main(String[] args) {
 
+        String signal_queue = "";
         Map<String, String> props = PropertyUtil.getProperties();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         InitiateLogger(props);
         //Assuming the script always run with 2 arguments
-        String signal_queue = args[0];
+        try {
+            signal_queue = args[0];
+        } catch (Exception e) {
+            Log.warning("AWS queue name hasn't specified, system will use local queue");
+        }
         Date startDate = new Date();
         try {
             LogContext.pushProperty("{Application}", "Analyzer");
@@ -106,15 +111,14 @@ public class AnalyzerApplication {
             if (props.get("isTradingView") != null)
                 isTradingView = Boolean.parseBoolean(props.get("isTradingView"));
 
-            if (signal_queue != null)
-                queue_name = signal_queue;
-
             try {
-                //Starting aws queue reader
-                new PollAWSSQSService(ac, queue_name).getMessages();
+                if (StringUtils.isNotEmpty(signal_queue)) {
+                    new PollAWSSQSService(ac, signal_queue).getMessages();
+                }
             } catch (Exception e) {
-                Log.warning(e, "Error in connecting AWS queue, system will use local queue");
+                Log.warning("No AWS queue specified, system will use local queue");
             }
+
             if (props.get("exchangeType") != null)
                 exchangeType = props.get("exchangeType");
 
