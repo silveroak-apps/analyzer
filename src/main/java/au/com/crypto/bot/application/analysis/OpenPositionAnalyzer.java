@@ -60,21 +60,21 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
 
                                 //Adding processed symbol to map
                                 lastSignal.put(symbol, new Date());
-                                Log.information("Processing event - checking for is event already processed - {EventProcessed} for eventId {EventId}",
+                                Log.information("OpenPositionAnalyzer - Processing event - checking for is event already processed - {EventProcessed} for eventId {EventId}",
                                         processedEvents.contains(marketEvent.getId()), marketEvent.getId());
 
                                 if (openSignals.isEmpty() && !processedEvents.contains(marketEvent.getId())) {
                                     trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                                             CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                             props, marketEvent.getMarket(), marketEvent.getContracts());
-                                    Log.information("No Open Signals on this symbol {Symbol} for market event {MarketEvent} (Id: {MarketEventId}) and raised a new signal",
+                                    Log.information("OpenPositionAnalyzer - No Open Signals on this symbol {Symbol} for market event {MarketEvent} (Id: {MarketEventId}) and raised a new signal",
                                             symbol, marketEvent, marketEvent.getId());
 
                                     // Adding processed event to avoid duplicated entries
-                                    Log.information("Adding market event {EventId} to processed events.", marketEvent.getId());
+                                    Log.information("OpenPositionAnalyzer - Adding market event {EventId} to processed events.", marketEvent.getId());
                                     processedEvents.add(marketEvent.getId());
                                 } else if (!openSignals.isEmpty()) {
-                                    Log.information("{Application} Found an active / created / unknown signal - {Strategy}" +
+                                    Log.information("OpenPositionAnalyzer - {Application} Found an active / created / unknown signal - {Strategy}" +
                                                     "--- Signal Status {SignalStatus}" +
                                                     "--- Position Status {PositionStatus}" +
                                                     "--- Symbol {Symbol}" +
@@ -94,21 +94,21 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                                             , openSignals.get(0).getCreatedDateTime()
                                     );
                                 } else {
-                                    Log.information("Event already processed {Symbol} for the {Event} and id {Id}", symbol, marketEvent.getName(), marketEvent.getId());
+                                    Log.information("OpenPositionAnalyzer - Event already processed {Symbol} for the {Event} and id {Id}", symbol, marketEvent.getName(), marketEvent.getId());
                                 }
                             }}}} // try-with-resources: LogContext
                         } catch (Exception e) {
-                            Log.error(e, "{Application} Error occurred in {class}: in placing a signal ", "Analyzer",
+                            Log.error(e, "OpenPositionAnalyzer - {Application} Error occurred in {class}: in placing a signal ", "Analyzer",
                                     OpenPositionAnalyzer.class.getSimpleName(), e.getMessage());
                         }
                     }
                 } else {
-                    Log.information("{Application} No positive matches found for active strategies and market events ", this.getClass().getSimpleName());
+                    Log.information("OpenPositionAnalyzer - {Application} No positive matches found for active strategies and market events ", this.getClass().getSimpleName());
                 }
                 Thread.sleep(5000);
             }
         } catch (Exception e) {
-            Log.error(e, "{@Application} Error occurred in @{class}: ", "Analyzer",
+            Log.error(e, "OpenPositionAnalyzer - {@Application} Error occurred in @{class}: ", "Analyzer",
                     OpenPositionAnalyzer.class.getSimpleName(), e.getMessage());
         }
     }

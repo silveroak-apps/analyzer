@@ -51,7 +51,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                             LogContext.pushProperty("StrategyName", conditionsGroup.getConditionsName());
                             LogContext.pushProperty("Application Name", getClass().getSimpleName());
                             String symbol = sp.getSymbol();
-                            Log.information("Found a match for {Symbol} - {PositionType}- {MarketEvent} and {Strategy}",
+                            Log.information("ClosePositionAnalyzer - Found a match for {Symbol} - {PositionType}- {MarketEvent} and {Strategy}",
                                     symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             var openSignals = getOpenSignalBySymbolWithPositionStatus(symbol,
                                     sp.getPositionType());
@@ -61,7 +61,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                                 trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
                                         CONSTANTS._close, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                         props, marketEvent.getMarket(), marketEvent.getContracts());
-                                Log.information("{Application} Found an existing signal raising a new command close Strategy - {Strategy}" +
+                                Log.information("ClosePositionAnalyzer - {Application} Found an existing signal raising a new command close Strategy - {Strategy}" +
                                                 "--- Signal Status {SignalStatus}" +
                                                 "--- Position Status {PositionStatus}" +
                                                 "--- Symbol {Symbol}" +
@@ -82,16 +82,16 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                                 );
                                 processedEvents.add(marketEvent.getId());
                             } else {
-                                Log.information("Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as the market event is already processed ",
+                                Log.information("ClosePositionAnalyzer - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as the market event is already processed ",
                                         symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
                         } catch (Exception e) {
-                            Log.error(e, "{Application} Error occurred in {class}: in placing a signal ", "Analyzer",
+                            Log.error(e, "ClosePositionAnalyzer - {Application} Error occurred in {class}: in placing a signal ", "Analyzer",
                                     OpenPositionAnalyzer.class.getSimpleName(), e.getMessage());
                         }
                     }
                 } else {
-                    Log.information("{Application} No positive matches found for active strategies and market events ", this.getClass().getSimpleName());
+                    Log.information("ClosePositionAnalyzer - {Application} No positive matches found for active strategies and market events ", this.getClass().getSimpleName());
                 }
                 FuturesSignalController fsController = ac.getFuturesSignalController();
                 List<FuturesSignal> futuresSignals = fsController.findAllActiveSignalsByStrategy(CONSTANTS._binance_exchange_futures);
@@ -102,7 +102,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer implements Runnable 
                 Thread.sleep(2000);
             }
         } catch (Exception e) {
-            Log.error(e, "{@Application} Error occurred in {class}: ", "Analyzer",
+            Log.error(e, "ClosePositionAnalyzer - {@Application} Error occurred in {class}: ", "Analyzer",
                     OpenPositionAnalyzer.class.getSimpleName(), e.getMessage());
         }
     }
