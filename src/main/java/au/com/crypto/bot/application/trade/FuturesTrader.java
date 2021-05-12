@@ -35,7 +35,7 @@ public class FuturesTrader extends TraderImpl {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName);
-            Log.information("{@Application} Successfully posted a signal command @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
+            Log.information("{@Application} Successfully posted a signal @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
         }
         saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts);
         Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);

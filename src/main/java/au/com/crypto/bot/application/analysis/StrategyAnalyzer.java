@@ -24,8 +24,8 @@ public abstract class StrategyAnalyzer {
         strategies = LoadStrategies.getInstance().getStrategies();
         List<Map<String, Object>> strategyMatchList = new ArrayList<>();
         for (Strategies.Strategy sp : strategies.getStrategies()) {
-            LogContext.pushProperty("Strategy -> ", sp.getStrategyName());
-            LogContext.pushProperty("Application -> ", getClass().getSimpleName());
+            LogContext.pushProperty("Strategy", sp.getStrategyName());
+            LogContext.pushProperty("Application", getClass().getSimpleName());
             //For Open Strategies - Open and Close is for spot
             if (strategyType.equalsIgnoreCase(CONSTANTS._open) || strategyType.equalsIgnoreCase(CONSTANTS._open_n_close)) {
                 sp.getOpenConditionGroups().iterator()
@@ -133,10 +133,9 @@ public abstract class StrategyAnalyzer {
         }
         if (filteredMarketEvents.size() == conditions.size()) {
             MarketEvent marketEvent = filteredEvents.get(filteredEvents.size() - 1);
-            Log.information("A match found for {Strategy}", conditionsGroup.getConditionsName());
             strategyMatch.put(CONSTANTS._strategy, conditionsGroup);
             strategyMatch.put(CONSTANTS._marketEvent, marketEvent);
-            Log.information("A match found for {Strategy}", conditionsGroup.getConditionsName());
+            Log.information("A match found for {Strategy}: {MarketEvent}", conditionsGroup.getConditionsName(), marketEvent);
         }
     }
 
