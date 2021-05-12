@@ -52,7 +52,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                             try (var sn  = LogContext.pushProperty("StrategyName", conditionsGroup.getConditionsName())) {
                             try (var an  = LogContext.pushProperty("Application", getClass().getSimpleName())) {
                                 String symbol = sp.getSymbol();
-                                Log.information("Found a match for {Symbol} - {PositionType}- MarketEvent ({MarketEventId}) {@MarketEvent} and {@Strategy}",
+                                Log.information("Found a match for {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy}",
                                         symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup);
 
                                 var openSignals = getOpenSignalBySymbol(symbol,
@@ -60,11 +60,14 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
 
                                 //Adding processed symbol to map
                                 lastSignal.put(symbol, new Date());
+                                Log.information("Processing event - checking for is event already processed - {EventProcessed} for eventId {EventId}",
+                                        processedEvents.contains(marketEvent.getId()), marketEvent.getId());
+
                                 if (openSignals.isEmpty() && !processedEvents.contains(marketEvent.getId())) {
                                     trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                                             CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                             props, marketEvent.getMarket(), marketEvent.getContracts());
-                                    Log.information("No Open Signals on this symbol {Symbol} for market event {@MarketEvent} (Id: {MarketEventId}) and raised a new signal",
+                                    Log.information("No Open Signals on this symbol {Symbol} for market event {MarketEvent} (Id: {MarketEventId}) and raised a new signal",
                                             symbol, marketEvent, marketEvent.getId());
 
                                     // Adding processed event to avoid duplicated entries
