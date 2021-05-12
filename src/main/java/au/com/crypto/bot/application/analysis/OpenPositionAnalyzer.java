@@ -47,10 +47,10 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                             MarketEvent marketEvent = (MarketEvent) match.get(CONSTANTS._marketEvent);
                             Strategies.ConditionsGroup conditionsGroup = (Strategies.ConditionsGroup) match.get(CONSTANTS._strategy);
                             Strategies.Strategy sp = (Strategies.Strategy) match.get(CONSTANTS._strategy_pair);
-                            try (LogContext.pushProperty("MarketEventName", marketEvent.getName())) {
-                            try (LogContext.pushProperty("StrategyPairName", sp.getStrategyName())) {  
-                            try (LogContext.pushProperty("StrategyName", conditionsGroup.getConditionsName())) {
-                            try (LogContext.pushProperty("Application", getClass().getSimpleName())) {
+                            try (var me  = LogContext.pushProperty("MarketEventName", marketEvent.getName())) {
+                            try (var spn = LogContext.pushProperty("StrategyPairName", sp.getStrategyName())) {  
+                            try (var sn  = LogContext.pushProperty("StrategyName", conditionsGroup.getConditionsName())) {
+                            try (var an  = LogContext.pushProperty("Application", getClass().getSimpleName())) {
                                 String symbol = sp.getSymbol();
                                 Log.information("Found a match for {Symbol} - {PositionType}- MarketEvent ({MarketEventId}) {@MarketEvent} and {@Strategy}",
                                         symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup);
