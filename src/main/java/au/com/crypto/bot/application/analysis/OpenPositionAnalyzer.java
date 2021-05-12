@@ -68,7 +68,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer implements Runnable {
                                             symbol, marketEvent, marketEvent.getId());
 
                                     // Adding processed event to avoid duplicated entries
-                                    Log.debug("Adding market event {EventId} to processed events.", marketEvent.getId());
+                                    Log.information("Adding market event {EventId} to processed events.", marketEvent.getId());
                                     processedEvents.add(marketEvent.getId());
                                 } else if (!openSignals.isEmpty()) {
                                     Log.information("{Application} Found an active / created / unknown signal - {Strategy}" +
