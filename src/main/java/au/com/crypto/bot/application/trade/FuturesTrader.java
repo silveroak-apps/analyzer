@@ -5,6 +5,7 @@ import au.com.crypto.bot.application.CONSTANTS;
 import au.com.crypto.bot.application.analyzer.entities.*;
 import au.com.crypto.bot.application.utils.JSONHelper;
 import au.com.crypto.bot.application.utils.LoadConfigs;
+import au.com.crypto.bot.application.utils.Utils;
 import com.google.gson.Gson;
 import serilogj.Log;
 
@@ -37,13 +38,13 @@ public class FuturesTrader extends TraderImpl {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName);
             Log.information("{@Application} Successfully posted a signal @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
         }
-        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts);
+        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props);
         Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);
     }
 
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
                                          String symbol, double price, String tradeType,
-                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts) {
+                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts, Map<String, String> props) {
         FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
         FuturesSignalCommand fsCommand = new FuturesSignalCommand();
         fsCommand.setSignalId(signalId);
@@ -63,12 +64,18 @@ public class FuturesTrader extends TraderImpl {
                         getContractsByMarket(market, contracts , price)
                 ));
                 fscController.save(fsCommand);
+
                 Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
                         "with Contracts {Contracts}" +
                         "with Position Type {PositionType}" +
                         "with Strategy name {Strategy}" +
                         "with contract multiplier {Multiplier}" +
                         "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, leverage);
+                try {
+                    Utils.triggerSellBotForBuy(props.get("protocol"), props.get("host"), props.get("path"));
+                } catch (Exception e) {
+                    Log.error(e,"Error Raising http signal to trader");
+                }
             } else {
                 Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Balance: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol));
             }
