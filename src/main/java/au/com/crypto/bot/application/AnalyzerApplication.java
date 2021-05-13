@@ -108,6 +108,9 @@ public class AnalyzerApplication {
             ac.setStrategyController(strategyController);
             ac.setConfigController(configsController);
 
+            if (props.get("exchangeType") != null)
+                exchangeType = props.get("exchangeType");
+
             if (props.get("isTradingView") != null)
                 isTradingView = Boolean.parseBoolean(props.get("isTradingView"));
 
@@ -119,20 +122,6 @@ public class AnalyzerApplication {
                 Log.warning("No AWS queue specified, system will use local queue");
             }
 
-            if (props.get("exchangeType") != null)
-                exchangeType = props.get("exchangeType");
-
-            Trader trader = new FuturesTrader();
-            if (exchangeType.equalsIgnoreCase(CONSTANTS._futures)) {
-                new OpenPositionAnalyzer(ac, trader);
-                new ClosePositionAnalyzer(ac, trader);
-            } else if (exchangeType.equalsIgnoreCase(CONSTANTS._spot)) {
-                new SpotBuyAnalyzer(ac, trader);
-            } else if (exchangeType.equalsIgnoreCase("ALL")) {
-                new OpenPositionAnalyzer(ac, trader);
-                new ClosePositionAnalyzer(ac, trader);
-                new SpotBuyAnalyzer(ac, trader);
-            }
             LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), AnalyzerApplication.class.getSimpleName(), "Application Running in @{ExchangeType} " + exchangeType);
         } catch (Exception e) {
             Log.error(e,"ERROR IN RUNNING ANALYZER BOT");

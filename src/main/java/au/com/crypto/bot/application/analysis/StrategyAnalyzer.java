@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 public abstract class StrategyAnalyzer {
 
-    Strategies strategies;
     Trader trader;
 
     StrategyAnalyzer(Trader trader) {
@@ -21,11 +20,11 @@ public abstract class StrategyAnalyzer {
     }
 
     public List<Map<String, Object>> analyzeStrategy(String strategyType)  {
-        strategies = LoadStrategies.getInstance().getStrategies();
+        Strategies strategies = LoadStrategies.getInstance().getStrategies();
         List<Map<String, Object>> strategyMatchList = new ArrayList<>();
         for (Strategies.Strategy sp : strategies.getStrategies()) {
             LogContext.pushProperty("Strategy", sp.getStrategyName());
-            LogContext.pushProperty("Application", getClass().getSimpleName());
+            LogContext.pushProperty("Application", "Analyzer");
             //For Open Strategies - Open and Close is for spot
             if (strategyType.equalsIgnoreCase(CONSTANTS._open) || strategyType.equalsIgnoreCase(CONSTANTS._open_n_close)) {
                 sp.getOpenConditionGroups().iterator()
@@ -179,6 +178,10 @@ public abstract class StrategyAnalyzer {
             }
         }
         filteredEvents.addAll(positiveMarketEvents);
+    }
+
+    public void run() {
+
     }
 
     /**

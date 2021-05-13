@@ -2,7 +2,13 @@ package au.com.crypto.bot.application.web;
 
 import au.com.crypto.bot.application.ApplicationControllers;
 import au.com.crypto.bot.application.AnalyzerApplication;
+import au.com.crypto.bot.application.CONSTANTS;
+import au.com.crypto.bot.application.analysis.ClosePositionAnalyzer;
+import au.com.crypto.bot.application.analysis.OpenPositionAnalyzer;
+import au.com.crypto.bot.application.analysis.SpotBuyAnalyzer;
 import au.com.crypto.bot.application.trade.EventCollector;
+import au.com.crypto.bot.application.trade.FuturesTrader;
+import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.LogUtil;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import org.json.JSONObject;
@@ -27,7 +33,7 @@ public class PollAWSSQSService extends QueueReader {
     private static final Logger logger = LoggerFactory.getLogger(AnalyzerApplication.class);
     static String QUEUE_NAME = "signal_webhook_test";
     Map<String, String> props;
-
+    static String exchangeType = "";
 
     private final ExecutorService executor
             = Executors.newSingleThreadExecutor();
@@ -150,6 +156,21 @@ public class PollAWSSQSService extends QueueReader {
                     messageJson.getString("category"),
                     epoch,
                     messageJson.toString());
+
+            //Analyze strategies
+            Trader trader = new FuturesTrader();
+            if (props.get("exchangeType") != null)
+                exchangeType = props.get("exchangeType");
+            if (exchangeType.equalsIgnoreCase(CONSTANTS._futures)) {
+                new OpenPositionAnalyzer(ac, trader).run();
+                new ClosePositionAnalyzer(ac, trader).run();
+            } else if (exchangeType.equalsIgnoreCase(CONSTANTS._spot)) {
+                new SpotBuyAnalyzer(ac, trader).run();
+            } else if (exchangeType.equalsIgnoreCase("ALL")) {
+                new OpenPositionAnalyzer(ac, trader).run();
+                new ClosePositionAnalyzer(ac, trader).run();
+                new SpotBuyAnalyzer(ac, trader).run();
+            }
         } catch (Exception e) {
             Log.error(e, "Error in processing message from queue -> ", m.messageId());
         }
