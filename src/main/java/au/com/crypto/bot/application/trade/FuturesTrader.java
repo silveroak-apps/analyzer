@@ -84,11 +84,17 @@ public class FuturesTrader extends TraderImpl {
                     getContractsByMarket(market, eventContracts , price)
             ));
             fscController.save(fsCommand);
+
             Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
                     "with Contracts {Contracts}" +
                     "with Position Type {PositionType}" +
                     "with Strategy name {Strategy}" +
                     "with Leverage {Leverage}", "Analyzer", symbol, signalId, eventContracts, tradeType, strategyPairName,  leverage);
+            try {
+                Utils.triggerSellBotForBuy(props.get("protocol"), props.get("host"), props.get("path"));
+            } catch (Exception e) {
+                Log.error(e,"Error Raising http signal to trader");
+            }
         }
     }
 
