@@ -3,6 +3,7 @@ package au.com.crypto.bot.application.utils;
 import org.slf4j.Logger;
 import serilogj.Log;
 
+@Deprecated
 public class LogUtil {
 
     public static void printLog(Logger logger, String level, String clazz, String message) {

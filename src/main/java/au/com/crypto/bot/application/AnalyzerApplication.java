@@ -122,10 +122,10 @@ public class AnalyzerApplication {
                 Log.warning("No AWS queue specified, system will use local queue");
             }
 
-            LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), AnalyzerApplication.class.getSimpleName(), "Application Running in @{ExchangeType} " + exchangeType);
+            Log.information("Application Running in {ExchangeType} ",  exchangeType);
         } catch (Exception e) {
             Log.error(e,"ERROR IN RUNNING ANALYZER BOT");
-            System.exit(0);
+            System.exit(1);
         }
        SpringApplication.run(AnalyzerApplication.class, args);
 
@@ -143,6 +143,6 @@ public class AnalyzerApplication {
                 .writeTo(seq(seqHost))
                 .setMinimumLevel(LogEventLevel.Verbose)
                 .createLogger());
-        LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), AnalyzerApplication.class.getSimpleName(), "Seq host " + seqHost);
+        Log.information( "Seq host {SeqHost}", seqHost);
     }
 }

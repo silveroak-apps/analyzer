@@ -43,7 +43,7 @@ public class PropertyUtil {
                     inputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    System.exit(0);
+                    System.exit(1);
                 }
             }
 

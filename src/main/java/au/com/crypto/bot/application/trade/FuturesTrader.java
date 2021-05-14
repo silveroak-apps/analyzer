@@ -12,7 +12,6 @@ import serilogj.Log;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +35,7 @@ public class FuturesTrader extends TraderImpl {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName);
-            Log.information("{@Application} Successfully posted a signal @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
+            Log.information("{@Application} Successfully saved a signal @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
         }
         saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props);
         Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);
@@ -72,7 +71,7 @@ public class FuturesTrader extends TraderImpl {
                         "with contract multiplier {Multiplier}" +
                         "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, leverage);
                 try {
-                    Utils.triggerSellBotForBuy(props.get("protocol"), props.get("host"), props.get("path"));
+                    Utils.triggerTrader(props.get("protocol"), props.get("host"), props.get("path"));
                 } catch (Exception e) {
                     Log.error(e,"Error Raising http signal to trader");
                 }
@@ -91,7 +90,7 @@ public class FuturesTrader extends TraderImpl {
                     "with Strategy name {Strategy}" +
                     "with Leverage {Leverage}", "Analyzer", symbol, signalId, eventContracts, tradeType, strategyPairName,  leverage);
             try {
-                Utils.triggerSellBotForBuy(props.get("protocol"), props.get("host"), props.get("path"));
+                Utils.triggerTrader(props.get("protocol"), props.get("host"), props.get("path"));
             } catch (Exception e) {
                 Log.error(e,"Error Raising http signal to trader");
             }
@@ -111,7 +110,7 @@ public class FuturesTrader extends TraderImpl {
         fs.setSymbol(symbol);
         FuturesSignalController fsc = ac.getFuturesSignalController();
         long signalId = fsc.save(fs);
-        Log.information("{@Application} Successfully posted a future signal @{Symbol} signal id @{SignalId}", "Analyzer", symbol, signalId);
+        Log.information("{@Application} Successfully saved a future signal @{Symbol} signal id @{SignalId}", "Analyzer", symbol, signalId);
         return signalId;
     }
 

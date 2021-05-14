@@ -12,6 +12,7 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import serilogj.Log;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -273,16 +274,14 @@ public class Utils {
     }
 
     //http://localhost:50352/tradeSignals
-    public static void triggerSellBotForBuy(String protocol, String host, String path) {
+    public static void triggerTrader(String protocol, String host, String path) throws ExecutionException, InterruptedException {
 
         AsyncHttpClient asyncHttpClient = asyncHttpClient();
         // bound
         Future<Response> whenResponse = asyncHttpClient.preparePost(protocol+"://"+host+path).execute();
-        try {
-            Response response = whenResponse.get();
-        } catch (InterruptedException | ExecutionException e) {
-            LogUtil.printLog(logger, LogUtil.STATUS.ERROR.name(), "LogUtil", "Error in calling sell bot",e);
-        }
+        Response response = whenResponse.get();
+        Log.information("Response from trader {ResponseCode}, {Response}", response.getStatusCode(), response);
+
     }
 
     public static boolean isFunding() {
