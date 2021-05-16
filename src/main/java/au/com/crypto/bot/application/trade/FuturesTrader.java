@@ -76,7 +76,7 @@ public class FuturesTrader extends TraderImpl {
                     Log.error(e,"Error Raising http signal to trader");
                 }
             } else {
-                Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Balance: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol));
+                Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Contracts: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol));
             }
         } else {
             fsCommand.setQuantity(BigDecimal.valueOf(
