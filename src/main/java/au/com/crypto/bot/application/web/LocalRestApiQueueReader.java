@@ -62,7 +62,7 @@ public class LocalRestApiQueueReader extends QueueReader {
             if (messageJson.has("contracts")) {
                 contracts = messageJson.getInt("contracts");
             }
-            pushEvent(ac.getMarketEventController(),
+            pushEvent(ac, ac.getMarketEventController(),
                     messageJson.getString("name"),
                     messageJson.getDouble("price"),
                     messageJson.getString("symbol"),

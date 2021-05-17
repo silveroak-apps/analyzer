@@ -18,11 +18,10 @@ import java.util.Map;
 
 public class QueueReader {
 
-    private ApplicationControllers ac;
     String SOURCE = "tradingView";
 
 
-    protected void pushEvent(MarketEventController mec, String name, double price, String symbol, String market,
+    protected void pushEvent(ApplicationControllers ac, MarketEventController mec, String name, double price, String symbol, String market,
                              long timeframe, String exchange, int contracts, String category,
                              long epoch, String event, Map<String, String> props) {
         MarketEvent marketEvent = new MarketEvent();
@@ -41,11 +40,11 @@ public class QueueReader {
         Log.information("{@Application}  -> " + "Successfully saved event from {@MarketSource}" +
                         " for Symbol {@Symbol}, {@Timeframe}, {@Name} -> {@id}",
                 "Analyzer", SOURCE,  symbol, timeframe, name, id);
-        analyzeStrategies(props);
+        analyzeStrategies(ac, props);
 
     }
 
-    protected void analyzeStrategies(Map<String, String> props) {
+    protected void analyzeStrategies(ApplicationControllers ac, Map<String, String> props) {
         //Analyze strategies
         String exchangeType = "";
         Trader trader = new FuturesTrader();
