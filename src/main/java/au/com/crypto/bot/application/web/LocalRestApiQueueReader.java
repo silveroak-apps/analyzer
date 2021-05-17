@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 @RequestMapping("/api/v1")
 public class LocalRestApiQueueReader extends QueueReader {
 
-    Map<String, String> props = PropertyUtil.getProperties();
+    Map<String, String> props =  null;
     @Autowired
     private LocalRestApiQueueReader localRestApiQueueReader;
 
@@ -55,7 +55,7 @@ public class LocalRestApiQueueReader extends QueueReader {
 
     //Process requested event
     private String processMessage(ApplicationControllers ac, String payload) {
-
+      props = PropertyUtil.getProperties();
       try {
             JSONObject messageJson = new JSONObject(payload);
             int contracts = -1;
