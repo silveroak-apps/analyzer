@@ -155,7 +155,7 @@ public class PollAWSSQSService extends QueueReader {
                     contracts,
                     messageJson.getString("category"),
                     epoch,
-                    messageJson.toString(), props);
+                    messageJson.toString(), props, "tradingView");
 
         } catch (Exception e) {
             Log.error(e, "Error in processing message from queue -> ", m.messageId());

@@ -72,7 +72,7 @@ public class LocalRestApiQueueReader extends QueueReader {
                     contracts,
                     messageJson.getString("category"),
                     new Date().getTime(),
-                    messageJson.toString(), props);
+                    messageJson.toString(), props, "trader");
             Log.information("{Application} Successfully processed event -> {EventMessage}", "LocalEventReader", payload);
         } catch (Exception e) {
             Log.error(e, "Error in processing message from queue {Payload} -> ", payload);

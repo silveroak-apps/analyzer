@@ -105,7 +105,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
             }
         } catch (Exception e) {
             Log.error(e, "{Class} - {@Application} Error occurred in {class}: ", "ClosePositionAnalyzer", "Analyzer",
-                    OpenPositionAnalyzer.class.getSimpleName(), e.getMessage());
+                    ClosePositionAnalyzer.class.getSimpleName(), e.getMessage());
         }
     }
 

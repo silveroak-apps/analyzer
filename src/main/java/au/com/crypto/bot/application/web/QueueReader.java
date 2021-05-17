@@ -18,12 +18,9 @@ import java.util.Map;
 
 public class QueueReader {
 
-    String SOURCE = "tradingView";
-
-
     protected void pushEvent(ApplicationControllers ac, MarketEventController mec, String name, double price, String symbol, String market,
                              long timeframe, String exchange, int contracts, String category,
-                             long epoch, String event, Map<String, String> props) {
+                             long epoch, String event, Map<String, String> props, String source) {
         MarketEvent marketEvent = new MarketEvent();
         marketEvent.setMessage(event);
         marketEvent.setMarket(market);
@@ -31,7 +28,7 @@ public class QueueReader {
         marketEvent.setSymbol(symbol);
         marketEvent.setTimeframe(timeframe);
         marketEvent.setEventTime(new Date(epoch));
-        marketEvent.setSource(SOURCE);
+        marketEvent.setSource(source);
         marketEvent.setCategory(category);
         marketEvent.setName(name);
         marketEvent.setContracts(contracts);
@@ -39,7 +36,7 @@ public class QueueReader {
         String id = mec.save(marketEvent);
         Log.information("{@Application}  -> " + "Successfully saved event from {@MarketSource}" +
                         " for Symbol {@Symbol}, {@Timeframe}, {@Name} -> {@id}",
-                "Analyzer", SOURCE,  symbol, timeframe, name, id);
+                "Analyzer", source,  symbol, timeframe, name, id);
         analyzeStrategies(ac, props);
 
     }
