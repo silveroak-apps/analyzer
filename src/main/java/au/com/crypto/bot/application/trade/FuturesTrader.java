@@ -71,7 +71,7 @@ public class FuturesTrader extends TraderImpl {
                         "with contract multiplier {Multiplier}" +
                         "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, leverage);
                 try {
-                    Utils.triggerTrader(props.get("protocol"), props.get("host"), props.get("path"));
+                    Utils.triggerTrader(props.get("traderUrl"));
                 } catch (Exception e) {
                     Log.error(e,"Error Raising http signal to trader");
                 }
@@ -90,7 +90,7 @@ public class FuturesTrader extends TraderImpl {
                     "with Strategy name {Strategy}" +
                     "with Leverage {Leverage}", "Analyzer", symbol, signalId, eventContracts, tradeType, strategyPairName,  leverage);
             try {
-                Utils.triggerTrader(props.get("protocol"), props.get("host"), props.get("path"));
+                Utils.triggerTrader(props.get("traderUrl"));
             } catch (Exception e) {
                 Log.error(e,"Error Raising http signal to trader");
             }

@@ -274,14 +274,14 @@ public class Utils {
     }
 
     //http://localhost:50352/tradeSignals
-    public static void triggerTrader(String protocol, String host, String path) throws ExecutionException, InterruptedException {
+    public static void triggerTrader(String url) throws ExecutionException, InterruptedException {
 
         AsyncHttpClient asyncHttpClient = asyncHttpClient();
         // bound
-        Future<Response> whenResponse = asyncHttpClient.preparePost(protocol+"://"+host+path).execute();
+        Future<Response> whenResponse = asyncHttpClient.preparePost(url).execute();
         Response response = whenResponse.get();
         Log.information("Response from trader {ResponseCode}, {Response} - {URL}", response.getStatusCode(), response,
-                protocol+"://"+host+path);
+               url);
 
     }
 

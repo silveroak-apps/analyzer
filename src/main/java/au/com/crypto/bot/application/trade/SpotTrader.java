@@ -70,7 +70,7 @@ public class SpotTrader extends TraderImpl {
         pos.setExchangeId((long) CONSTANTS._binance_exchange_spot);
         String signalId = positiveSignalController.save(pos);
         try {
-            Utils.triggerTrader(props.get("protocol"), props.get("host"), props.get("path"));
+            Utils.triggerTrader(props.get("traderUrl"));
         } catch (Exception e) {
             Log.error(e, "Exception occurred in triggering trader bot");
         }
