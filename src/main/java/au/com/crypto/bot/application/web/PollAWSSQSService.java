@@ -33,7 +33,7 @@ public class PollAWSSQSService extends QueueReader {
     private static final Logger logger = LoggerFactory.getLogger(AnalyzerApplication.class);
     static String QUEUE_NAME = "signal_webhook_test";
     Map<String, String> props;
-    static String exchangeType = "";
+
 
     private final ExecutorService executor
             = Executors.newSingleThreadExecutor();
@@ -155,22 +155,8 @@ public class PollAWSSQSService extends QueueReader {
                     contracts,
                     messageJson.getString("category"),
                     epoch,
-                    messageJson.toString());
+                    messageJson.toString(), props);
 
-            //Analyze strategies
-            Trader trader = new FuturesTrader();
-            if (props.get("exchangeType") != null)
-                exchangeType = props.get("exchangeType");
-            if (exchangeType.equalsIgnoreCase(CONSTANTS._futures)) {
-                new OpenPositionAnalyzer(ac, trader).run();
-                new ClosePositionAnalyzer(ac, trader).run();
-            } else if (exchangeType.equalsIgnoreCase(CONSTANTS._spot)) {
-                new SpotBuyAnalyzer(ac, trader).run();
-            } else if (exchangeType.equalsIgnoreCase("ALL")) {
-                new OpenPositionAnalyzer(ac, trader).run();
-                new ClosePositionAnalyzer(ac, trader).run();
-                new SpotBuyAnalyzer(ac, trader).run();
-            }
         } catch (Exception e) {
             Log.error(e, "Error in processing message from queue -> ", m.messageId());
         }

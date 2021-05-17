@@ -2,6 +2,7 @@ package au.com.crypto.bot.application.web;
 
 import au.com.crypto.bot.application.ApplicationControllers;
 import au.com.crypto.bot.application.utils.LogUtil;
+import au.com.crypto.bot.application.utils.PropertyUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -13,6 +14,7 @@ import software.amazon.awssdk.services.sqs.model.Message;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,6 +22,7 @@ import java.util.concurrent.Executors;
 @RequestMapping("/api/v1")
 public class LocalRestApiQueueReader extends QueueReader {
 
+    Map<String, String> props = PropertyUtil.getProperties();
     @Autowired
     private LocalRestApiQueueReader localRestApiQueueReader;
 
@@ -51,10 +54,10 @@ public class LocalRestApiQueueReader extends QueueReader {
     }
 
     //Process requested event
-    private String processMessage(ApplicationControllers ac, String s) {
+    private String processMessage(ApplicationControllers ac, String payload) {
 
       try {
-            JSONObject messageJson = new JSONObject(s);
+            JSONObject messageJson = new JSONObject(payload);
             int contracts = -1;
             if (messageJson.has("contracts")) {
                 contracts = messageJson.getInt("contracts");
@@ -69,10 +72,10 @@ public class LocalRestApiQueueReader extends QueueReader {
                     contracts,
                     messageJson.getString("category"),
                     new Date().getTime(),
-                    messageJson.toString());
-            Log.information("{Application} Successfully processed event -> {EventMessage}", "LocalEventReader", s);
+                    messageJson.toString(), props);
+            Log.information("{Application} Successfully processed event -> {EventMessage}", "LocalEventReader", payload);
         } catch (Exception e) {
-            Log.error(e, "Error in processing message from queue -> ", s);
+            Log.error(e, "Error in processing message from queue {Payload} -> ", payload);
         }
         return "{\"message\": \"success\"}";
     }
