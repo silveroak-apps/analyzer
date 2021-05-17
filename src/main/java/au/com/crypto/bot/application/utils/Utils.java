@@ -280,7 +280,8 @@ public class Utils {
         // bound
         Future<Response> whenResponse = asyncHttpClient.preparePost(protocol+"://"+host+path).execute();
         Response response = whenResponse.get();
-        Log.information("Response from trader {ResponseCode}, {Response}", response.getStatusCode(), response);
+        Log.information("Response from trader {ResponseCode}, {Response} - {URL}", response.getStatusCode(), response,
+                protocol+"://"+host+path);
 
     }
 
