@@ -119,7 +119,7 @@ public class AnalyzerApplication {
                     new PollAWSSQSService(ac, signal_queue).getMessages();
                 }
             } catch (Exception e) {
-                Log.warning("No AWS queue specified, system will use local queue");
+                Log.warning(e, "No AWS queue specified, system will use local queue due to below exception");
             }
 
             Log.information("Application Running in {ExchangeType} ",  exchangeType);
