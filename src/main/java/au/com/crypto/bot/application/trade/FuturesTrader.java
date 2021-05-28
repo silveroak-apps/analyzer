@@ -31,19 +31,19 @@ public class FuturesTrader extends TraderImpl {
     public void raiseSignal(ApplicationControllers ac, long existingSignalId, double price, String symbol,
                             String tradeType,
                             String positionType, Strategies.ConditionsGroup conditionsGroup, String strategyPairName,
-                            Map<String, String> props, String market, int contracts) {
+                            Map<String, String> props, String market, int contracts, long exchangeId, long marketEventId) {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
-            signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName);
+            signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId);
             Log.information("{@Application} Successfully saved a signal @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
         }
-        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props);
+        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props, marketEventId);
         Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);
     }
 
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
                                          String symbol, double price, String tradeType,
-                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts, Map<String, String> props) {
+                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts, Map<String, String> props, long marketEventId) {
         FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
         FuturesSignalCommand fsCommand = new FuturesSignalCommand();
         fsCommand.setSignalId(signalId);
@@ -54,7 +54,7 @@ public class FuturesTrader extends TraderImpl {
         fsCommand.setRequestDateTime(new Date());
         fsCommand.setLeverage(leverage);
         fsCommand.setPrice(new BigDecimal(price));
-
+        fsCommand.setMarketEventId(marketEventId);
         fsCommand.setSignalAction(tradeType); //OPEN, CLOSE, INCREASE ..
         if (eventContracts <= 0) {
             double contracts = getDefaultContractsFromDB(ac, symbol);
@@ -69,7 +69,8 @@ public class FuturesTrader extends TraderImpl {
                         "with Position Type {PositionType}" +
                         "with Strategy name {Strategy}" +
                         "with contract multiplier {Multiplier}" +
-                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, leverage);
+                        "with marketEventId {MarketEventId}" +
+                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, marketEventId, leverage);
                 try {
                     Utils.triggerTrader(props.get("traderUrl"));
                 } catch (Exception e) {
@@ -101,9 +102,9 @@ public class FuturesTrader extends TraderImpl {
         return (int) Math.round(market.equalsIgnoreCase("USDT") ? contracts : (contracts * price) / 10);
     }
 
-    private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName) {
+    private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName, long exchangeId) {
         FuturesSignal fs = new FuturesSignal();
-        fs.setExchangeId(CONSTANTS._binance_exchange_futures);
+        fs.setExchangeId(exchangeId);
         fs.setCreatedDateTime(new Date());
         fs.setStrategyPairName(strategyPairName);
         fs.setPositionType(positionType);

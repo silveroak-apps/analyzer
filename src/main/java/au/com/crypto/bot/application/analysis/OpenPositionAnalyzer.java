@@ -9,8 +9,6 @@ import au.com.crypto.bot.application.trade.Strategies;
 import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import com.google.gson.Gson;
-import io.advantageous.boon.core.Sys;
-import org.springframework.util.CollectionUtils;
 import serilogj.Log;
 import serilogj.context.LogContext;
 
@@ -53,7 +51,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                                 processedEvents.contains(marketEvent.getId()));
 
                                         var openSignals = getOpenSignalBySymbol(symbol,
-                                                sp.getPositionType());
+                                                sp.getPositionType(), marketEvent.getExchangeId());
 
                                         //Adding processed symbol to map
                                         lastSignal.put(symbol, new Date());
@@ -61,7 +59,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                             if (openSignals.isEmpty()) {
                                                 trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                                                         CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                                                        props, marketEvent.getMarket(), marketEvent.getContracts());
+                                                        props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
                                                 Log.information("{Class} - No Open Signals on this symbol {Symbol} for market event {MarketEvent} Id: {MarketEventId} and raised a new signal",
                                                         "OpenPositionAnalyzer", symbol, marketEvent, marketEvent.getId());
                                                 processedEvents.add(marketEvent.getId());
@@ -109,9 +107,9 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
         }
     }
 
-    private static List<FuturesSignal> getOpenSignalBySymbol(String symbol, String positionType) {
+    private static List<FuturesSignal> getOpenSignalBySymbol(String symbol, String positionType, long exchangeId) {
         FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
-        return futuresSignalController.findActiveSignals(symbol, CONSTANTS._binance_exchange_futures, positionType);
+        return futuresSignalController.findActiveSignals(symbol, exchangeId, positionType);
     }
 
     /**

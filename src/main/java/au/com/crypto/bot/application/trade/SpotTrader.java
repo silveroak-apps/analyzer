@@ -22,7 +22,7 @@ public class SpotTrader extends TraderImpl {
     public void raiseSignal(ApplicationControllers ac, long existingSignalId, double price, String symbol,
                             String tradeType,
                             String positionType, Strategies.ConditionsGroup conditionsGroup, String strategyPairName,
-                            Map<String, String> props, String market, int contracts) {
+                            Map<String, String> props, String market, int contracts, long exchangeId, long marketEventId) {
         buyOrder(ac.getPositiveSignalController(), price, symbol, market, tradeType, props, conditionsGroup.getConditionsName());
     }
 

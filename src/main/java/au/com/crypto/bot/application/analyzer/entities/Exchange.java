@@ -17,27 +17,51 @@ public class Exchange implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "CODE")
+    @Column(name = "code")
     private String code;
 
-    @Column(name = "DESCRIPTION")
-    private String description;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "MORE_INFO")
-    private String moreInfo;
-
+    @Column(name = "active")
+    private boolean active;
 
     public Exchange() {
     }
 
-    public Exchange(String code, String description,  String moreInfo) {
+    public Exchange(String code, String name, boolean active) {
         this.code = code;
-        this.description = description;
-        this.moreInfo = moreInfo;//9985743479
+        this.name = name;
+        this.active = active;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 
     @Override
     public String toString() {
-        return String.format("Exchange[id=%d, code='%s', description='%s', moreInfo = %s]", id, code, description,moreInfo);
+        return String.format("Exchange[id=%d, code='%s', description='%s', moreInfo = %s]", id, code, name);
     }
 }

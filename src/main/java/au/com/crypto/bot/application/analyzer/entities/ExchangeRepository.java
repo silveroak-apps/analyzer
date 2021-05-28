@@ -4,4 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ExchangeRepository extends CrudRepository<Exchange, Long>{
   Exchange findExchangeByCode(String code);
+  Exchange findExchangeByName(String name);
 }

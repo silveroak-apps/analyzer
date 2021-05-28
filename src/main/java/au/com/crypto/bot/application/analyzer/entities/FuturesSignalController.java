@@ -52,7 +52,7 @@ public class FuturesSignalController {
 	/**
 	 * to get the find signals by symbol used for open signals
 	 */
-	public List<FuturesSignal> findActiveSignals(String symbol, int exchangeId, String positionType) {
+	public List<FuturesSignal> findActiveSignals(String symbol, long exchangeId, String positionType) {
 
 		String query = """
 					   select signal_id, symbol, position_type, 
@@ -76,7 +76,7 @@ public class FuturesSignalController {
 	 * @param positionType
 	 * @return
 	 */
-	public List<FuturesSignal> findActiveSignalsWithPosition(String symbol, int exchangeId, String positionType) {
+	public List<FuturesSignal> findActiveSignalsWithPosition(String symbol, long exchangeId, String positionType) {
 
 		String query = """
 					   select signal_id, symbol, position_type, 
@@ -90,7 +90,7 @@ public class FuturesSignalController {
 		return findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType);
 	}
 
-	private List<FuturesSignal> findSignalsByPositionAndStatus(String query, String symbol, int exchangeId, String positionType) {
+	private List<FuturesSignal> findSignalsByPositionAndStatus(String query, String symbol, long exchangeId, String positionType) {
 		Query q = em.createNativeQuery(query);
 
 		q.setParameter("symbol", symbol);

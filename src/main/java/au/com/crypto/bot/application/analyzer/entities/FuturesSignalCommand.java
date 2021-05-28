@@ -73,6 +73,9 @@ public class FuturesSignalCommand {
     @Column(name = "strategy_data")
     private String strategyData;
 
+    @Column(name = "market_event_id")
+    private long marketEventId;
+
     public long getId() {
         return id;
     }
@@ -175,5 +178,13 @@ public class FuturesSignalCommand {
 
     public void setStrategyData(String strategyData) {
         this.strategyData = strategyData;
+    }
+
+    public long getMarketEventId() {
+        return marketEventId;
+    }
+
+    public void setMarketEventId(long marketEventId) {
+        this.marketEventId = marketEventId;
     }
 }

@@ -9,7 +9,6 @@ import au.com.crypto.bot.application.trade.Strategies;
 import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import com.google.gson.Gson;
-import org.hibernate.boot.SchemaAutoTooling;
 import serilogj.Log;
 import serilogj.context.LogContext;
 
@@ -51,7 +50,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                 processedEvents.contains(marketEvent.getId()));
 
                         var openSignals = getOpenSignalBySymbolWithPositionStatus(symbol,
-                                sp.getPositionType());
+                                sp.getPositionType(), marketEvent.getExchangeId());
                         Log.information("{Class} - Checking for active signals - ActiveSignalsSize - {Size}",
                                 "ClosePositionAnalyzer", openSignals.size());
                         if (!processedEvents.contains(marketEvent.getId())) {
@@ -60,7 +59,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                 FuturesSignal fs = openSignals.get(0);
                                 trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
                                         CONSTANTS._close, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                                        props, marketEvent.getMarket(), marketEvent.getContracts());
+                                        props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
                                 Log.information("{Class} - {Application} Found an existing signal raising a new command close Strategy - {Strategy}" +
                                                 "--- Signal Status {SignalStatus}" +
                                                 "--- Position Status {PositionStatus}" +
@@ -99,18 +98,19 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                 Log.information("{Class} - {Application} No positive matches found for active strategies and market events ", "ClosePositionAnalyzer", this.getClass().getSimpleName());
             }
             FuturesSignalController fsController = ac.getFuturesSignalController();
-            List<FuturesSignal> futuresSignals = fsController.findAllActiveSignalsByStrategy(CONSTANTS._binance_exchange_futures);
-            if (futuresSignals != null && !futuresSignals.isEmpty()) {
-                //TODO: need to do trailing stop loss
-            }
+            //TODO: need to do trailing stop loss
+//            List<FuturesSignal> futuresSignals = fsController.findAllActiveSignalsByStrategy(CONSTANTS._binance_exchange_futures);
+//            if (futuresSignals != null && !futuresSignals.isEmpty()) {
+//
+//            }
         } catch (Exception e) {
             Log.error(e, "{Class} - {@Application} Error occurred in {class}: ", "ClosePositionAnalyzer", "Analyzer",
                     ClosePositionAnalyzer.class.getSimpleName(), e.getMessage());
         }
     }
 
-    private List<FuturesSignal> getOpenSignalBySymbolWithPositionStatus(String symbol, String positionType) {
+    private List<FuturesSignal> getOpenSignalBySymbolWithPositionStatus(String symbol, String positionType, long exchangeId) {
         FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
-        return futuresSignalController.findActiveSignalsWithPosition(symbol, CONSTANTS._binance_exchange_futures, positionType);
+        return futuresSignalController.findActiveSignalsWithPosition(symbol, exchangeId, positionType);
     }
 }

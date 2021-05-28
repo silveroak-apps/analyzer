@@ -1,7 +1,6 @@
 package au.com.crypto.bot.application.analyzer.entities;
 
 import au.com.crypto.bot.application.utils.LogUtil;
-import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +54,9 @@ public class MarketEvent implements Comparable<MarketEvent>{
     @Column(name = "contracts")
     private Integer contracts;
 
+    @Column(name = "exchange")
+    private Long exchangeId;
+
     @Transient
     private long eventTimeInEpoch;
 
@@ -68,6 +70,7 @@ public class MarketEvent implements Comparable<MarketEvent>{
         this.setTimeframe(marketEvent.getTimeframe());
         this.setMessage(marketEvent.getMessage());
         this.setContracts(marketEvent.getContracts());
+        this.setExchangeId(marketEvent.getExchangeId());
 
     }
 
@@ -91,6 +94,14 @@ public class MarketEvent implements Comparable<MarketEvent>{
         this.setPrice(price);
         this.setTimeframe(timeframe);
         this.setContracts(contracts);
+    }
+
+    public Long getExchangeId() {
+        return exchangeId;
+    }
+
+    public void setExchangeId(Long exchangeId) {
+        this.exchangeId = exchangeId;
     }
 
     public MarketEvent() {

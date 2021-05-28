@@ -2,6 +2,7 @@ package au.com.crypto.bot.application.analyzer.entities;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import serilogj.Log;
 
 @Component
 public class ExchangeController {
@@ -9,11 +10,11 @@ public class ExchangeController {
 	@Autowired
 	ExchangeRepository repository;
 
-	public String process() {
-		repository.save(new Exchange("BNB","Binance","Some more info"));
-
-		return "Done";
-	}
+//	public String process() {
+//		repository.save(new Exchange("BNB","Binance","Some more info", true));
+//
+//		return "Done";
+//	}
 
 
 	public String findAll(){
@@ -40,5 +41,15 @@ public class ExchangeController {
 
 
 		return result + "</html>";
+	}
+
+	public long findExchangeIdByName(String exchangeName) {
+		long exchangeId = -1;
+		try {
+			exchangeId = repository.findExchangeByName(exchangeName).getId();
+		} catch (Exception e){
+			Log.error("{@Application}  -> " + "Unable to find exchange name {@Exchange}", exchangeName);
+		}
+		return exchangeId;
 	}
 }

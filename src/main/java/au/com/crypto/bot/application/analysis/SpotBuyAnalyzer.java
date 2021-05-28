@@ -46,7 +46,7 @@ public class SpotBuyAnalyzer extends StrategyAnalyzer {
                             symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                     trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                             CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                            props, marketEvent.getMarket(), marketEvent.getContracts());
+                            props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
                 }
             }
         } catch (Exception e) {
