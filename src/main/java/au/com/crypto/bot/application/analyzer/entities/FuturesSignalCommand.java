@@ -61,9 +61,6 @@ public class FuturesSignalCommand {
     @Temporal(TemporalType.TIMESTAMP)
     private Date actionDateTime;
 
-    @Column(name = "exchange_order_id")
-    private Long  exchangeOrderId;
-
     @Column(name = "strategy_hash")
     private String strategyHash;
 
@@ -146,14 +143,6 @@ public class FuturesSignalCommand {
 
     public void setLeverage(Integer leverage) {
         this.leverage = leverage;
-    }
-
-    public Long getExchangeOrderId() {
-        return exchangeOrderId;
-    }
-
-    public void setExchangeOrderId(Long exchangeOrderId) {
-        this.exchangeOrderId = exchangeOrderId;
     }
 
     public String getStrategyHash() {
