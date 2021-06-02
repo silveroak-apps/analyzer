@@ -19,7 +19,8 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
     Map<String, String> props;
     Trader trader = null;
     Gson gson = new Gson();
-    private Set<Long> processedEvents = new HashSet();
+    private Set<Long> longProcessedEvents = new HashSet();
+    private Set<Long> shortProcessedEvents = new HashSet();
 
     public ClosePositionAnalyzer(ApplicationControllers ac, Trader trader) {
         super(trader);
@@ -45,15 +46,15 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                         LogContext.pushProperty("Application Name", getClass().getSimpleName());
                         String symbol = sp.getSymbol();
                         Log.information("{Class} - Found a match for {Symbol} - {PositionType}- {MarketEvent}, market event id - {MarketEventId} {Strategy} " +
-                                        "- isMarketEvent Processed {isMarketEvent}",
+                                        "- isMarketEvent Processed {isMarketEventLong} {isMarketEventShort}",
                                 "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), gson.toJson(conditionsGroup),
-                                processedEvents.contains(marketEvent.getId()));
+                                longProcessedEvents.contains(marketEvent.getId()), shortProcessedEvents.contains(marketEvent.getId()));
 
                         var openSignals = getOpenSignalBySymbolWithPositionStatus(symbol,
                                 sp.getPositionType(), marketEvent.getExchangeId());
                         Log.information("{Class} - Checking for active signals - ActiveSignalsSize - {Size}",
                                 "ClosePositionAnalyzer", openSignals.size());
-                        if (!processedEvents.contains(marketEvent.getId())) {
+                        if (!longProcessedEvents.contains(marketEvent.getId()) || !shortProcessedEvents.contains(marketEvent.getId())) {
                             if (!openSignals.isEmpty()) {
                                 //Assuming system will have one signal per symbol
                                 FuturesSignal fs = openSignals.get(0);
@@ -79,11 +80,14 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                         , openSignals.get(0).getUpdatedDateTime()
                                         , openSignals.get(0).getCreatedDateTime()
                                 );
-                                processedEvents.add(marketEvent.getId());
                             } else {
                                 Log.information("{Class}  - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as there are no active positions in the system ",
                                         "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
+                            if (sp.getPositionType().equalsIgnoreCase(CONSTANTS._long))
+                                longProcessedEvents.add(marketEvent.getId());
+                            else
+                                shortProcessedEvents.add(marketEvent.getId());
                         } else {
                             Log.information("{Class}  - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as the market event is already processed ",
                                     "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
