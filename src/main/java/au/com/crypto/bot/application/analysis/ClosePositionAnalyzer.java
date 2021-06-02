@@ -35,6 +35,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
         try {
             List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._close);
             if (!positiveValues.isEmpty()) {
+                Log.information("{Class} - Found {Size} matches for the event", "ClosePositionAnalyzer", positiveValues.size());
                 for (Map<String, Object> match : positiveValues) {
                     try {
                         MarketEvent marketEvent = (MarketEvent) match.get(CONSTANTS._marketEvent);
