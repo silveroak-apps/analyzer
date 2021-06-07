@@ -20,16 +20,24 @@ public class SpotBuyAnalyzer extends StrategyAnalyzer {
     Map<String, String> props;
     Trader trader;
     Gson gson = new Gson();
-
-    public SpotBuyAnalyzer(ApplicationControllers ac, Trader trader) {
+    private static SpotBuyAnalyzer spotBuyAnalyzer = null;
+    private Set<String> processedEvents = new HashSet<String>();
+    private SpotBuyAnalyzer(ApplicationControllers ac, Trader trader) {
         super(trader);
         props = PropertyUtil.getProperties();
         this.ac = ac;
         this.trader = trader;
     }
 
+    public static SpotBuyAnalyzer getInstance(ApplicationControllers ac, Trader trader) {
+        if (spotBuyAnalyzer == null)
+        {
+            spotBuyAnalyzer = new SpotBuyAnalyzer(ac, trader);
+        }
+        return spotBuyAnalyzer;
+    }
     @Override
-    public void run() {
+    public synchronized void run() {
         try {
             List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._open_n_close);
 
@@ -38,15 +46,21 @@ public class SpotBuyAnalyzer extends StrategyAnalyzer {
                     MarketEvent marketEvent = (MarketEvent) match.get(CONSTANTS._marketEvent);
                     Strategies.ConditionsGroup conditionsGroup = (Strategies.ConditionsGroup) match.get(CONSTANTS._strategy);
                     Strategies.Strategy sp = (Strategies.Strategy) match.get(CONSTANTS._strategy_pair);
+                    String key = marketEvent.getId()+"_"+ conditionsGroup.getConditionsName()+"_"+ sp.getStrategyId();
+
                     LogContext.pushProperty("MarketEventName", marketEvent.getName());
                     LogContext.pushProperty("StrategyPairName", sp.getStrategyName());
                     LogContext.pushProperty("StrategyName", conditionsGroup.getConditionsName());
                     String symbol = sp.getSymbol();
                     Log.information("Found a match for {Symbol} - {PositionType}- {MarketEvent} and {Strategy}}",
                             symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
-                    trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
-                            CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                            props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
+                    if (!processedEvents.contains(key)) {
+                        trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
+                                CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
+                                props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
+                        processedEvents.add(key);
+                    }
+
                 }
             }
         } catch (Exception e) {

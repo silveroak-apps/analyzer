@@ -49,14 +49,14 @@ public class QueueReader {
         if (props.get("exchangeType") != null)
             exchangeType = props.get("exchangeType");
         if (exchangeType.equalsIgnoreCase(CONSTANTS._futures)) {
-            new OpenPositionAnalyzer(ac, trader).run();
-            new ClosePositionAnalyzer(ac, trader).run();
+            OpenPositionAnalyzer.getInstance(ac, trader).run();
+            ClosePositionAnalyzer.getInstance(ac, trader).run();
         } else if (exchangeType.equalsIgnoreCase(CONSTANTS._spot)) {
-            new SpotBuyAnalyzer(ac, trader).run();
+            SpotBuyAnalyzer.getInstance(ac, trader).run();
         } else if (exchangeType.equalsIgnoreCase("ALL")) {
-            new OpenPositionAnalyzer(ac, trader).run();
-            new ClosePositionAnalyzer(ac, trader).run();
-            new SpotBuyAnalyzer(ac, trader).run();
+            OpenPositionAnalyzer.getInstance(ac, trader).run();
+            ClosePositionAnalyzer.getInstance(ac, trader).run();
+            SpotBuyAnalyzer.getInstance(ac, trader).run();
         }
     }
 }
