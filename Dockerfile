@@ -30,4 +30,4 @@ CMD /app/run_java.sh ${signalqueue}
 
 EXPOSE 8090
 
-HEALTHCHECK --start-period=15s --interval=5s --retries=50 CMD  bash -c '/app/healthcheck.sh ||  kill 1' || exit 1
+HEALTHCHECK --start-period=20s --interval=5s --retries=50 CMD  bash -c '/app/healthcheck.sh ||  kill 1' || exit 1
