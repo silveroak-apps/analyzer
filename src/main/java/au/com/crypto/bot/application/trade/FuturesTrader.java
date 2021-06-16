@@ -31,19 +31,19 @@ public class FuturesTrader extends TraderImpl {
     public void raiseSignal(ApplicationControllers ac, long existingSignalId, double price, String symbol,
                             String tradeType,
                             String positionType, Strategies.ConditionsGroup conditionsGroup, String strategyPairName,
-                            Map<String, String> props, String market, int contracts, long exchangeId, long marketEventId) {
+                            Map<String, String> props, String market, int contracts, long exchangeId, long marketEventId, String exchangeName) {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId);
             Log.information("{@Application} Successfully saved a signal @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
         }
-        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props, marketEventId);
+        saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props, marketEventId, exchangeName);
         Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);
     }
 
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
                                          String symbol, double price, String tradeType,
-                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts, Map<String, String> props, long marketEventId) {
+                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts, Map<String, String> props, long marketEventId, String exchangeName) {
         FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
         FuturesSignalCommand fsCommand = new FuturesSignalCommand();
         fsCommand.setSignalId(signalId);
@@ -57,7 +57,7 @@ public class FuturesTrader extends TraderImpl {
         fsCommand.setMarketEventId(marketEventId);
         fsCommand.setSignalAction(tradeType); //OPEN, CLOSE, INCREASE ..
         if (eventContracts <= 0) {
-            double contracts = getDefaultContractsFromDB(ac, symbol);
+            double contracts = getDefaultContractsFromDB(ac, symbol, exchangeName);
             if (contracts != 0) {
                 fsCommand.setQuantity(BigDecimal.valueOf(
                         getContractsByMarket(market, contracts , price)
@@ -77,7 +77,7 @@ public class FuturesTrader extends TraderImpl {
                     Log.error(e,"Error Raising http signal to trader");
                 }
             } else {
-                Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Contracts: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol));
+                Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Contracts: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol, exchangeName));
             }
         } else {
             fsCommand.setQuantity(BigDecimal.valueOf(
@@ -98,8 +98,10 @@ public class FuturesTrader extends TraderImpl {
         }
     }
 
-    private int getContractsByMarket(String market, double contracts, double price) {
-        return (int) Math.round(market.equalsIgnoreCase("USDT") ? contracts : (contracts * price) / 10);
+    private double getContractsByMarket(String market, double contracts, double price) {
+        double contractsPerType = market.equalsIgnoreCase("USDT") ? contracts : (contracts * price) / 10;
+        int scale = 4;
+        return BigDecimal.valueOf(contractsPerType).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName, long exchangeId) {
@@ -115,10 +117,10 @@ public class FuturesTrader extends TraderImpl {
         return signalId;
     }
 
-    private Double getDefaultContractsFromDB(ApplicationControllers ac, String symbol) {
+    private Double getDefaultContractsFromDB(ApplicationControllers ac, String symbol, String exchangeName) {
         double returnValue = 0d;
         try {
-            Map<String, String> contracts = LoadConfigs.getConfig(ac, CONSTANTS._contracts);
+            Map<String, String> contracts = LoadConfigs.getConfig(ac, exchangeName);
             if (contracts.containsKey(symbol))
                 returnValue = Double.parseDouble(contracts.get(symbol));
         } catch (Exception e) {

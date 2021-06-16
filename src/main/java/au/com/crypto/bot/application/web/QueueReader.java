@@ -32,6 +32,7 @@ public class QueueReader {
         marketEvent.setCategory(category);
         marketEvent.setName(name);
         marketEvent.setContracts(contracts);
+        marketEvent.setExchangeName(exchange);
         marketEvent.setExchangeId(ac.getExchange().findExchangeIdByName(exchange));
         Events.getInstance().addMarketEvent(marketEvent);
         String id = mec.save(marketEvent);

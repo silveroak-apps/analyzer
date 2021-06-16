@@ -24,8 +24,9 @@ public class CONSTANTS {
     public static String _spot               = "SPOT";
     public static String _strategy_pair_name     = "STRATEGY_PAIR_NAME";
     public static String _strategy_pair         = "STRATEGY_PAIR";
-    public static String _active                = "ACTIVE";
-    public static String _open_n_close           = "OPEN_N_CLOSE";
-    public static String _contracts              = "contracts";
-    public static String _contractsMultiplier    = "contractsMultiplier";
+    public static String _active                       = "ACTIVE";
+    public static String _open_n_close                 = "OPEN_N_CLOSE";
+    public static String _bybit_contracts              = "ByBitFutures";
+    public static String _binance_contracts            = "BinanceFutures";
+    public static String _contractsMultiplier          = "contractsMultiplier";
 }

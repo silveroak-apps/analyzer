@@ -58,6 +58,9 @@ public class MarketEvent implements Comparable<MarketEvent>{
     private Long exchangeId;
 
     @Transient
+    private String exchangeName;
+
+    @Transient
     private long eventTimeInEpoch;
 
     public void copy(MarketEvent marketEvent) {
@@ -71,7 +74,7 @@ public class MarketEvent implements Comparable<MarketEvent>{
         this.setMessage(marketEvent.getMessage());
         this.setContracts(marketEvent.getContracts());
         this.setExchangeId(marketEvent.getExchangeId());
-
+        this.setExchangeName(marketEvent.getExchangeName());
     }
 
     public String getCategory() {
@@ -94,6 +97,14 @@ public class MarketEvent implements Comparable<MarketEvent>{
         this.setPrice(price);
         this.setTimeframe(timeframe);
         this.setContracts(contracts);
+    }
+
+    public String getExchangeName() {
+        return exchangeName;
+    }
+
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
     }
 
     public Long getExchangeId() {

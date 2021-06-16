@@ -70,7 +70,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                     FuturesSignal fs = openSignals.get(0);
                                     trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
                                             CONSTANTS._close, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                                            props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
+                                            props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId(), marketEvent.getExchangeName());
                                     Log.information("{Class} - {Application} Found an existing signal raising a new command close Strategy - {Strategy}" +
                                                     "--- Signal Status {SignalStatus}" +
                                                     "--- Position Status {PositionStatus}" +
