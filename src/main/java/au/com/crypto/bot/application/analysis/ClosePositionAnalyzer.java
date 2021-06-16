@@ -63,40 +63,47 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                 sp.getPositionType(), marketEvent.getExchangeId());
                         Log.information("{Class} - Checking for active signals - ActiveSignalsSize - {Size}",
                                 "ClosePositionAnalyzer", openSignals.size());
-                        if (!processedEvents.contains(key)) {
-                            if (!openSignals.isEmpty()) {
-                                //Assuming system will have one signal per symbol
-                                FuturesSignal fs = openSignals.get(0);
-                                trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
-                                        CONSTANTS._close, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                                        props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
-                                Log.information("{Class} - {Application} Found an existing signal raising a new command close Strategy - {Strategy}" +
-                                                "--- Signal Status {SignalStatus}" +
-                                                "--- Position Status {PositionStatus}" +
-                                                "--- Symbol {Symbol}" +
-                                                "--- Position Type {PositionType}" +
-                                                "--- Position Size {PositionSize}" +
-                                                "--- Signal Id {SignalId}" +
-                                                "--- Updated time {UpdatedTime}" +
-                                                "--- Created time {CreatedTime}",
-                                        "ClosePositionAnalyzer", "Analyzer", conditionsGroup.getConditionsName()
-                                        , openSignals.get(0).getSignalStatus()
-                                        , openSignals.get(0).getPositionStatus()
-                                        , openSignals.get(0).getSymbol()
-                                        , openSignals.get(0).getPositionType()
-                                        , openSignals.get(0).getPositionSize()
-                                        , openSignals.get(0).getSignalId()
-                                        , openSignals.get(0).getUpdatedDateTime()
-                                        , openSignals.get(0).getCreatedDateTime()
-                                );
+                        if (sp.getExchangeId() == marketEvent.getExchangeId()) {
+                            if (!processedEvents.contains(key)) {
+                                if (!openSignals.isEmpty()) {
+                                    //Assuming system will have one signal per symbol
+                                    FuturesSignal fs = openSignals.get(0);
+                                    trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
+                                            CONSTANTS._close, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
+                                            props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId());
+                                    Log.information("{Class} - {Application} Found an existing signal raising a new command close Strategy - {Strategy}" +
+                                                    "--- Signal Status {SignalStatus}" +
+                                                    "--- Position Status {PositionStatus}" +
+                                                    "--- Symbol {Symbol}" +
+                                                    "--- Position Type {PositionType}" +
+                                                    "--- Position Size {PositionSize}" +
+                                                    "--- Signal Id {SignalId}" +
+                                                    "--- Updated time {UpdatedTime}" +
+                                                    "--- Created time {CreatedTime}",
+                                            "ClosePositionAnalyzer", "Analyzer", conditionsGroup.getConditionsName()
+                                            , openSignals.get(0).getSignalStatus()
+                                            , openSignals.get(0).getPositionStatus()
+                                            , openSignals.get(0).getSymbol()
+                                            , openSignals.get(0).getPositionType()
+                                            , openSignals.get(0).getPositionSize()
+                                            , openSignals.get(0).getSignalId()
+                                            , openSignals.get(0).getUpdatedDateTime()
+                                            , openSignals.get(0).getCreatedDateTime()
+                                    );
+                                } else {
+                                    Log.information("{Class}  - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as there are no active positions in the system ",
+                                            "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
+                                }
+                                processedEvents.add(key);
                             } else {
-                                Log.information("{Class}  - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as there are no active positions in the system ",
+                                Log.information("{Class}  - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as the market event is already processed ",
                                         "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
-                            processedEvents.add(key);
                         } else {
-                            Log.information("{Class}  - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as the market event is already processed ",
-                                    "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
+                            Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
+                                            "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
+                                    "ClosePositionAnalyzer", marketEvent.getExchangeId(), symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
+                                    processedEvents.contains(key), key);
                         }
 
                     } catch (Exception e) {

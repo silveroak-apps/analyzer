@@ -52,6 +52,9 @@ public class Strategy {
     @Column(name = "version")
     private long version;
 
+    @Column(name = "exchange_id")
+    private long exchangeId;
+
     @Column(name = "created_time", columnDefinition = "timestamp without time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
@@ -132,5 +135,11 @@ public class Strategy {
         this.updatedTime = updatedTime;
     }
 
+    public long getExchangeId() {
+        return exchangeId;
+    }
 
+    public void setExchangeId(long exchangeId) {
+        this.exchangeId = exchangeId;
+    }
 }

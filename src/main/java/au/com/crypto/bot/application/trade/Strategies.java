@@ -74,6 +74,7 @@ public class Strategies {
         private String strategyName;
         private String positionType;
         private String exchangeType;
+        private long exchangeId;
         private String symbol;
         private String source;
         private long version;
@@ -90,6 +91,15 @@ public class Strategies {
             this.setExchangeType(strategy.getExchangeType());
             this.setVersion(strategy.getVersion());
             this.setStrategyId(strategy.getId());
+            this.setExchangeId(strategy.getExchangeId());
+        }
+
+        public long getExchangeId() {
+            return exchangeId;
+        }
+
+        public void setExchangeId(long exchangeId) {
+            this.exchangeId = exchangeId;
         }
 
         public long getStrategyId() {
@@ -177,6 +187,7 @@ public class Strategies {
             newStrategyPair.setExchangeType(exchangeType);
             newStrategyPair.setSymbol(symbol);
             newStrategyPair.setSource(source);
+            newStrategyPair.setExchangeId(exchangeId);
             newStrategyPair.setCloseConditionGroups(new ArrayList<>(getCloseConditionGroups()!=null ? getCloseConditionGroups() : Collections.emptyList()));
             newStrategyPair.setOpenConditionGroups(new ArrayList<>(getOpenConditionGroups()!=null ? getOpenConditionGroups() : Collections.emptyList()));
             return newStrategyPair;
