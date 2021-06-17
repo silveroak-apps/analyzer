@@ -17,7 +17,7 @@ public class EventCollector {
     public static void loadMarketEventsFromDB(ApplicationControllers ac) {
         MarketEventController mc = ac.getMarketEventController();
         Events events = Events.getInstance();
-        List<MarketEvent> listOfMarketEvents = mc.findAllOrderByDateDesc();
+        List<MarketEvent> listOfMarketEvents = mc.findAllEventsLimitThousand();
         events.addMarketEvents(listOfMarketEvents);
         logger.info("Successfully loaded all market events from DB, No of Events: " + listOfMarketEvents.size());
         Log.information("{@Application} Successfully loaded all market events from DB, No of Events: "

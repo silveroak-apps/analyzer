@@ -1,6 +1,7 @@
 package au.com.crypto.bot.application.analyzer.entities;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -39,6 +40,11 @@ public class MarketEventController {
 
 	public List<MarketEvent> findAllOrderByDateDesc() {
 		return repository.findAllByOrderByEventTimeDesc();
+	}
+
+	//@Query("select * from market_event me order by id desc limit 1000")
+	public List<MarketEvent> findAllEventsLimitThousand() {
+		return repository.findAllEventsLimitThousand();
 	}
 	public String fetchDataBySymbol( String Id){
 		String result = "<html>";
