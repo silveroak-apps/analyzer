@@ -25,4 +25,4 @@ else
 fi
 
 java --version
-java --enable-preview -jar -server -Dapp.props=/app/app.properties -Dpostgres_db=${POSTGRES_DB} -Dpostgres_password="${POSTGRES_PASSWORD}" -Dpostgres_user=${POSTGRES_USER} -XX:MetaspaceSize=100m -Xms128m -Xmx512m -XX:NewSize=200m -XX:MaxNewSize=300m -XX:+UseG1GC -XX:+UseStringDeduplication /app/analyzer-1.0-SNAPSHOT.jar $1
+java --enable-preview -jar -server -Dapp.props=/app/app.properties -Dpostgres_db=${POSTGRES_DB} -Dpostgres_password="${POSTGRES_PASSWORD}" -Dpostgres_user=${POSTGRES_USER} -XX:MetaspaceSize=100m -Xms128m -Xmx1024m -XX:NewSize=200m -XX:MaxNewSize=300m -XX:+UseG1GC -XX:+UseStringDeduplication /app/analyzer-1.0-SNAPSHOT.jar $1
