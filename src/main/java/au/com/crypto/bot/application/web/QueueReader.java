@@ -34,7 +34,7 @@ public class QueueReader {
         marketEvent.setContracts(contracts);
         marketEvent.setExchangeName(exchange);
         marketEvent.setExchangeId(ac.getExchange().findExchangeIdByName(exchange));
-        Events.getInstance().addMarketEvent(marketEvent);
+        Events.getInstance().addMarketEventToQueue(marketEvent);
         String id = mec.save(marketEvent);
         Log.information("{@Application}  -> " + "Successfully saved event from {@MarketSource}" +
                         " for Symbol {@Symbol}, {@Timeframe}, {@Name} -> {@id}",

@@ -98,7 +98,9 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                     Log.information("{Class}} - Event already processed {Symbol} for the {Event} and id {Id}", "OpenPositionAnalyzer", symbol, marketEvent.getName(), marketEvent.getId());
                                 }
                             } else {
-                                Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} or {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
+                                Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange " +
+                                                "{Exchange} or {Symbol} or the event may not belong to this symbol- {PositionType}- MarketEvent  {MarketEvent} - " +
+                                                "{MarketEventId} and {Strategy} " +
                                                 "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
                                         "OpenPositionAnalyzer", marketEvent.getExchangeId(), symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
                                         processedEvents.contains(key), key);

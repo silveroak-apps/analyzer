@@ -82,7 +82,6 @@ public class PollAWSSQSService extends QueueReader {
         QUEUE_NAME = queueName;
         Log.information("New thread: started for {QueueName}", queueName);
         this.ac = ac;
-        EventCollector.loadMarketEventsFromDB(ac);
     }
 
     public void getSQSMessages() {

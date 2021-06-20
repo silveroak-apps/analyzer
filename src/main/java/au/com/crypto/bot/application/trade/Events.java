@@ -3,7 +3,11 @@ package au.com.crypto.bot.application.trade;
 import au.com.crypto.bot.application.analyzer.entities.MarketEvent;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.apache.commons.collections4.QueueUtils;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 /**
  * This class contains a collection of all the market events
@@ -12,8 +16,8 @@ public class Events {
 
     private static Events signalCollector;
     //Synchronized market event queue
-    CopyOnWriteArrayList<MarketEvent> marketEvents = new CopyOnWriteArrayList<MarketEvent>();
-
+    Queue<MarketEvent> queue = QueueUtils.synchronizedQueue(new CircularFifoQueue<MarketEvent>(250));
+    
     public static Events getInstance()
     {
         if (signalCollector == null)
@@ -26,14 +30,15 @@ public class Events {
 
     private Events() {}
 
-    public void addMarketEvent(MarketEvent me) {
-        marketEvents.add(me);
+    public void addMarketEventsToQueue(List<MarketEvent> mes) {
+        queue.addAll(mes);
     }
-    public void addMarketEvents(List<MarketEvent> mes) {
-        marketEvents.addAll(mes);
+
+    public void addMarketEventToQueue(MarketEvent me) {
+        queue.add(me);
     }
 
     public CopyOnWriteArrayList<MarketEvent> getMarketEvents() {
-        return marketEvents;
+        return new CopyOnWriteArrayList<>(queue);
     }
 }

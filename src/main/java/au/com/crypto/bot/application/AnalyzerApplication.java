@@ -8,6 +8,7 @@ import au.com.crypto.bot.application.ticker.entities.Coin24HrMarketController;
 import au.com.crypto.bot.application.ticker.entities.CoinStatsController;
 import au.com.crypto.bot.application.ticker.entities.CoinStatsHistoryController;
 import au.com.crypto.bot.application.ticker.entities.TickerController;
+import au.com.crypto.bot.application.trade.EventCollector;
 import au.com.crypto.bot.application.trade.FuturesTrader;
 import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.LogUtil;
@@ -113,7 +114,8 @@ public class AnalyzerApplication {
 
             if (props.get("isTradingView") != null)
                 isTradingView = Boolean.parseBoolean(props.get("isTradingView"));
-
+            //Loading market events
+            EventCollector.loadMarketEventsFromDB(ac);
             try {
                 if (StringUtils.isNotEmpty(signal_queue)) {
                     new PollAWSSQSService(ac, signal_queue).getMessages();

@@ -56,67 +56,36 @@ public class FuturesTrader extends TraderImpl {
         fsCommand.setPrice(new BigDecimal(price));
         fsCommand.setMarketEventId(marketEventId);
         fsCommand.setSignalAction(tradeType); //OPEN, CLOSE, INCREASE ..
+        double contracts = 0;
         if (tradeType.equalsIgnoreCase(CONSTANTS._close)) {
-            fsCommand.setQuantity(BigDecimal.valueOf(getActiveContracts(ac, signalId)));
-            if (fsCommand.getQuantity().doubleValue() != 0) {
-                fscController.save(fsCommand);
-                Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
-                        "with Contracts From Active Position {Contracts}" +
-                        "with Position Type {PositionType}" +
-                        "with Strategy name {Strategy}" +
-                        "with contract multiplier {Multiplier}" +
-                        "with marketEventId {MarketEventId}" +
-                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, fsCommand.getQuantity(), tradeType, strategyPairName, marketEventId, leverage);
-                try {
-                    Utils.triggerTrader(props.get("traderUrl"));
-                } catch (Exception e) {
-                    Log.error(e, "Error Raising http signal to trader");
-                }
-            } else {
-                Log.error("WRONG SIGNAL OR NO CONTRACTS - Symbol: {Symbol} - Contracts: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol, exchangeName));
-            }
-        }
-        if (eventContracts <= 0 && fsCommand.getQuantity().doubleValue() != 0) {
-            double contracts = getDefaultContractsFromDB(ac, symbol, exchangeName);
-            if (contracts != 0) {
-                fsCommand.setQuantity(BigDecimal.valueOf(
-                        getContractsByMarket(market, contracts, price)
-                ));
-                fscController.save(fsCommand);
-
-                Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
-                        "with Contracts {Contracts}" +
-                        "with Position Type {PositionType}" +
-                        "with Strategy name {Strategy}" +
-                        "with contract multiplier {Multiplier}" +
-                        "with marketEventId {MarketEventId}" +
-                        "with Leverage {Leverage}", "Analyzer", symbol, signalId, contracts, tradeType, strategyPairName, marketEventId, leverage);
-                try {
-                    Utils.triggerTrader(props.get("traderUrl"));
-                } catch (Exception e) {
-                    Log.error(e, "Error Raising http signal to trader");
-                }
-            } else {
-                Log.error("WRONG SYMBOL OR NO CONTRACTS - Symbol: {Symbol} - Contracts: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol, exchangeName));
-            }
+            contracts = getActiveContracts(ac, signalId);
+        } else if (eventContracts <= 0) {
+            contracts = getDefaultContractsFromDB(ac, symbol, exchangeName);
         } else {
-            fsCommand.setQuantity(BigDecimal.valueOf(
-                    getContractsByMarket(market, eventContracts, price)
-            ));
-            fscController.save(fsCommand);
+            contracts = getContractsByMarket(market, eventContracts, price);
+        }
 
+        if (contracts != 0) {
+            fsCommand.setQuantity(BigDecimal.valueOf(contracts));
+            fscController.save(fsCommand);
             Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
-                    "with Contracts {Contracts}" +
+                    "with Contracts From Active Position {Contracts}" +
                     "with Position Type {PositionType}" +
                     "with Strategy name {Strategy}" +
-                    "with Leverage {Leverage}", "Analyzer", symbol, signalId, eventContracts, tradeType, strategyPairName, leverage);
+                    "with contract multiplier {Multiplier}" +
+                    "with marketEventId {MarketEventId}" +
+                    "with Leverage {Leverage}", "Analyzer", symbol, signalId, fsCommand.getQuantity(), tradeType, strategyPairName, marketEventId, leverage);
             try {
                 Utils.triggerTrader(props.get("traderUrl"));
             } catch (Exception e) {
                 Log.error(e, "Error Raising http signal to trader");
             }
+        } else {
+            Log.error("WRONG SIGNAL OR NO CONTRACTS - Symbol: {Symbol} - Contracts: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol, exchangeName));
         }
+
     }
+
 
     private double getContractsByMarket(String market, double contracts, double price) {
         double contractsPerType = market.equalsIgnoreCase("USDT") ? contracts : (contracts * price) / 10;

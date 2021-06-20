@@ -100,10 +100,11 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                         "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
                         } else {
-                            Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} or {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
-                                            "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
+                            Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} or MarketEvent {Symbol} or " +
+                                            "Market event may not be related to this symbol- {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
+                                            "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey} - Strategy {StrategySymbol} Ready to place an order",
                                     "ClosePositionAnalyzer", marketEvent.getExchangeId(), symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
-                                    processedEvents.contains(key), key);
+                                    processedEvents.contains(key), key, sp.getSymbol());
                         }
 
                     } catch (Exception e) {
