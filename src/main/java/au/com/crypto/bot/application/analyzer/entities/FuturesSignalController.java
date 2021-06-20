@@ -114,6 +114,18 @@ public class FuturesSignalController {
 		return listFS;
 	}
 
+	public double getActiveContractsFromDB(long signalId){
+		String query = """
+				  SELECT position_size
+				  FROM futures_pnl
+				  WHERE signal_id = :signalId
+				""";
+		Query q = em.createNativeQuery(query);
+		q.setParameter("signalId", signalId);
+		Object result = q.getSingleResult();
+		return result == null ? 0: ((BigDecimal) result).doubleValue();
+	}
+
 	public List<FuturesSignal> findAllActiveSignalsByStrategy(int exchangeId) {
 		Query q = em.createNativeQuery("""
     			select signal_id, symbol, position_type,

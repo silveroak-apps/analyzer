@@ -180,7 +180,7 @@ public abstract class StrategyAnalyzer {
         filteredEvents.addAll(positiveMarketEvents);
     }
 
-    public synchronized void run() {
+    public synchronized void run(MarketEvent me) {
 
     }
 

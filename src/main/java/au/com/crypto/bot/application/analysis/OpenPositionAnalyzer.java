@@ -21,7 +21,6 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
     Trader trader = null;
     Gson gson = new Gson();
 
-    private Map<String, Date> lastSignal = new HashMap<>();
     private Set<String> processedEvents = new HashSet<String>();
     private static OpenPositionAnalyzer openPositionAnalyzer = null;
 
@@ -40,14 +39,13 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
         return openPositionAnalyzer;
     }
     @Override
-    public synchronized void run() {
+    public synchronized void run(MarketEvent marketEvent) {
         try {
 
             List<Map<String, Object>> positiveSignalMatches = analyzeStrategy(CONSTANTS._open);
             if (!positiveSignalMatches.isEmpty()) {
                 for (Map<String, Object> match : positiveSignalMatches) {
                     try {
-                        MarketEvent marketEvent = (MarketEvent) match.get(CONSTANTS._marketEvent);
                         Strategies.ConditionsGroup conditionsGroup = (Strategies.ConditionsGroup) match.get(CONSTANTS._strategy);
                         Strategies.Strategy sp = (Strategies.Strategy) match.get(CONSTANTS._strategy_pair);
                         String key = marketEvent.getId()+"_"+ conditionsGroup.getConditionsName()+"_"+ sp.getStrategyId();
@@ -63,9 +61,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
 
                             var openSignals = getOpenSignalBySymbol(symbol,
                                     sp.getPositionType(), marketEvent.getExchangeId());
-                            if (sp.getExchangeId() == marketEvent.getExchangeId()) {
-                                //Adding processed symbol to map
-                                lastSignal.put(symbol, new Date());
+                            if (sp.getExchangeId() == marketEvent.getExchangeId() && sp.getSymbol().equalsIgnoreCase(marketEvent.getSymbol())) {
                                 if (!processedEvents.contains(key)) {
                                     if (openSignals.isEmpty()) {
                                         trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
@@ -102,7 +98,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                     Log.information("{Class}} - Event already processed {Symbol} for the {Event} and id {Id}", "OpenPositionAnalyzer", symbol, marketEvent.getName(), marketEvent.getId());
                                 }
                             } else {
-                                Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
+                                Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} or {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
                                                 "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
                                         "OpenPositionAnalyzer", marketEvent.getExchangeId(), symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
                                         processedEvents.contains(key), key);

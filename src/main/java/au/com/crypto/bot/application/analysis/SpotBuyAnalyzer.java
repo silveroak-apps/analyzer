@@ -37,13 +37,12 @@ public class SpotBuyAnalyzer extends StrategyAnalyzer {
         return spotBuyAnalyzer;
     }
     @Override
-    public synchronized void run() {
+    public synchronized void run(MarketEvent marketEvent) {
         try {
             List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._open_n_close);
 
             if (!positiveValues.isEmpty()) {
                 for (Map<String, Object> match : positiveValues) {
-                    MarketEvent marketEvent = (MarketEvent) match.get(CONSTANTS._marketEvent);
                     Strategies.ConditionsGroup conditionsGroup = (Strategies.ConditionsGroup) match.get(CONSTANTS._strategy);
                     Strategies.Strategy sp = (Strategies.Strategy) match.get(CONSTANTS._strategy_pair);
                     String key = marketEvent.getId()+"_"+ conditionsGroup.getConditionsName()+"_"+ sp.getStrategyId();

@@ -38,7 +38,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
     }
 
     @Override
-    public synchronized void run() {
+    public synchronized void run(MarketEvent me) {
         try {
             List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._close);
             if (!positiveValues.isEmpty()) {
@@ -63,7 +63,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                 sp.getPositionType(), marketEvent.getExchangeId());
                         Log.information("{Class} - Checking for active signals - ActiveSignalsSize - {Size}",
                                 "ClosePositionAnalyzer", openSignals.size());
-                        if (sp.getExchangeId() == marketEvent.getExchangeId()) {
+                        if (sp.getExchangeId() == marketEvent.getExchangeId() && sp.getSymbol().equalsIgnoreCase(marketEvent.getSymbol())) {
                             if (!processedEvents.contains(key)) {
                                 if (!openSignals.isEmpty()) {
                                     //Assuming system will have one signal per symbol
@@ -100,7 +100,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                         "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
                         } else {
-                            Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
+                            Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} or {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
                                             "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
                                     "ClosePositionAnalyzer", marketEvent.getExchangeId(), symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
                                     processedEvents.contains(key), key);

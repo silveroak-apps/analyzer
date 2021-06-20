@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 public class LoadConfigs {
     static Gson gson = new Gson();
-    public static Map<String, String> getConfig(ApplicationControllers ac, String config) {
-        List<Configs> configs =  ac.getConfigController().findByName(config);
-        if (!config.isEmpty()) {
+    public static Map<String, String> getConfig(ApplicationControllers ac, String config_key) {
+        List<Configs> configs =  ac.getConfigController().findByName(config_key);
+        if (!config_key.isEmpty()) {
             String jsonString = configs.get(0).getJsonValue();
             Configurations contractsConfiguration = gson.fromJson(jsonString, Configurations.class);
             return Arrays.stream(contractsConfiguration.getConfiguration()).collect(
