@@ -56,7 +56,7 @@ public class FuturesSignalController {
 
 		String query = """
 					   select signal_id, symbol, position_type, 
-					   position_status, (executed_buy_qty - executed_sell_qty) as position_size, signal_status
+					   position_status, signal_status
 					   from futures_positions
 					   where symbol = :symbol 
 					   and exchange_id = :exchangeId
