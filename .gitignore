@@ -2,3 +2,6 @@
 analyzer.iml
 target/*
 .vscode/*
+.classpath
+.project
+.settings
