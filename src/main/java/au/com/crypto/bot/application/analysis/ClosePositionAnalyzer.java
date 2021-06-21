@@ -40,10 +40,10 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
     @Override
     public synchronized void run(MarketEvent me) {
         try {
-            List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._close);
-            if (!positiveValues.isEmpty()) {
-                Log.information("{Class} - Found {Size} matches for the event", "ClosePositionAnalyzer", positiveValues.size());
-                for (Map<String, Object> match : positiveValues) {
+            List<Map<String, Object>> strategyMatches = analyzeStrategy(CONSTANTS._close);
+            if (!strategyMatches.isEmpty()) {
+                Log.information("{Class} - Found {Size} matches for the event", "ClosePositionAnalyzer", strategyMatches.size());
+                for (Map<String, Object> match : strategyMatches) {
                     try {
                         MarketEvent marketEvent = (MarketEvent) match.get(CONSTANTS._marketEvent);
                         Strategies.ConditionsGroup conditionsGroup = (Strategies.ConditionsGroup) match.get(CONSTANTS._strategy);
@@ -76,7 +76,6 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                                     "--- Position Status {PositionStatus}" +
                                                     "--- Symbol {Symbol}" +
                                                     "--- Position Type {PositionType}" +
-                                                    "--- Position Size {PositionSize}" +
                                                     "--- Signal Id {SignalId}" +
                                                     "--- Updated time {UpdatedTime}" +
                                                     "--- Created time {CreatedTime}",
@@ -85,7 +84,6 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                             , openSignals.get(0).getPositionStatus()
                                             , openSignals.get(0).getSymbol()
                                             , openSignals.get(0).getPositionType()
-                                            , openSignals.get(0).getPositionSize()
                                             , openSignals.get(0).getSignalId()
                                             , openSignals.get(0).getUpdatedDateTime()
                                             , openSignals.get(0).getCreatedDateTime()

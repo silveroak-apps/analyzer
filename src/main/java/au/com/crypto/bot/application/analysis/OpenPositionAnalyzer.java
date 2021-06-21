@@ -76,7 +76,6 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                                         "--- Position Status {PositionStatus}" +
                                                         "--- Symbol {Symbol}" +
                                                         "--- Position Type {PositionType}" +
-                                                        "--- Position Size {PositionSize}" +
                                                         "--- Signal Id {SignalId}" +
                                                         "--- Updated time {UpdatedTime}" +
                                                         "--- Created time {CreatedTime}" +
@@ -87,7 +86,6 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                                 , openSignals.get(0).getPositionStatus()
                                                 , openSignals.get(0).getSymbol()
                                                 , openSignals.get(0).getPositionType()
-                                                , openSignals.get(0).getPositionSize()
                                                 , openSignals.get(0).getSignalId()
                                                 , openSignals.get(0).getUpdatedDateTime()
                                                 , openSignals.get(0).getCreatedDateTime()

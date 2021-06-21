@@ -78,14 +78,16 @@ public class FuturesSignalController {
 	 */
 	public List<FuturesSignal> findActiveSignalsWithPosition(String symbol, long exchangeId, String positionType) {
 
-		String query = """
-					   select signal_id, symbol, position_type, 
-					   position_status, (executed_buy_qty - executed_sell_qty) as position_size, signal_status 
-					   from futures_positions
-					   where symbol = :symbol 
-					   and exchange_id = :exchangeId
-					   and position_type = :positionType
-					   and signal_status = 'ACTIVE'
+		String query = """				   
+				select p.signal_id, p.symbol, p.position_type, p.position_status, p.signal_status
+				from futures_positions p
+				   join futures_signal_command fsc on p.signal_id = fsc.signal_id
+				where symbol = :symbol
+				   and exchange_id = :exchangeId
+				   and position_type = :positionType
+				   and signal_status = 'ACTIVE'
+				and fsc.signal_action = 'CLOSE'
+				and fsc.status = 'CREATED'
 					  """;
 		return findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType);
 	}
@@ -106,8 +108,7 @@ public class FuturesSignalController {
 			fs.setSymbol((String)obj[1]);
 			fs.setPositionType((String)obj[2]);
 			fs.setPositionStatus((String)obj[3]);
-			fs.setPositionSize(((BigDecimal)obj[4]).doubleValue());
-			fs.setSignalStatus((String)obj[5]);
+			fs.setSignalStatus((String)obj[4]);
 			listFS.add(fs);
 		}
 
@@ -129,8 +130,14 @@ public class FuturesSignalController {
 	public List<FuturesSignal> findAllActiveSignalsByStrategy(int exchangeId) {
 		Query q = em.createNativeQuery("""
     			select signal_id, symbol, position_type,
-				position_status, (executed_buy_qty - executed_sell_qty) as position_size
+				position_status,
+				case
+					when fs2.position_type = 'LONG' then coalesce (executed_buy_qty, 0) - coalesce (executed_sell_qty, 0)
+					when fs2.position_type = 'SHORT' then coalesce (executed_sell_qty, 0) - coalesce (executed_buy_qty, 0)
+					else -1
+				end AS position_size
 				from futures_positions
+					join futures_signal fs2 on fs2.signal_id = fp.signal_id
 				where exchange_id = :exchangeId
 				and signal_status = 'ACTIVE'
 				and position_status = 'OPEN'

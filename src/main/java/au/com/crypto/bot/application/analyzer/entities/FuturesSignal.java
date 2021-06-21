@@ -57,9 +57,6 @@ public class FuturesSignal {
     private String positionStatus;
 
     @Transient
-    private double positionSize;
-
-    @Transient
     private String signalStatus;
 
 
@@ -125,14 +122,6 @@ public class FuturesSignal {
 
     public void setPositionType(String positionType) {
         this.positionType = positionType;
-    }
-
-    public double getPositionSize() {
-        return positionSize;
-    }
-
-    public void setPositionSize(double positionSize) {
-        this.positionSize = positionSize;
     }
 
     public String getSignalStatus() {
