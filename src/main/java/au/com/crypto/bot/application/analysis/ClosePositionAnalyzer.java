@@ -65,7 +65,8 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                 "ClosePositionAnalyzer", openSignals.size());
                         if (sp.getExchangeId() == marketEvent.getExchangeId() && sp.getSymbol().equalsIgnoreCase(marketEvent.getSymbol())) {
                             if (!processedEvents.contains(key)) {
-                                if (!openSignals.isEmpty()) {
+                                if (!openSignals.isEmpty()
+                                        && !isAnyActiveCommandForSymbol(symbol, marketEvent.getExchangeId(), sp.getPositionType())) {
                                     //Assuming system will have one signal per symbol
                                     FuturesSignal fs = openSignals.get(0);
                                     trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
@@ -128,5 +129,10 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
     private List<FuturesSignal> getOpenSignalBySymbolWithPositionStatus(String symbol, String positionType, long exchangeId) {
         FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
         return futuresSignalController.findActiveSignalsWithPosition(symbol, exchangeId, positionType);
+    }
+
+    private boolean isAnyActiveCommandForSymbol(String symbol, long exchangeId, String positionType) {
+        FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
+        return futuresSignalController.isAnyActiveCommandForSymbol(symbol, exchangeId, positionType);
     }
 }

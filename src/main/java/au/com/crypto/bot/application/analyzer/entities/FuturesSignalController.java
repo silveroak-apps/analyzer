@@ -81,6 +81,27 @@ public class FuturesSignalController {
 		String query = """				   
 				select p.signal_id, p.symbol, p.position_type, p.position_status, p.signal_status
 				from futures_positions p
+				where symbol = :symbol
+				   and exchange_id = :exchangeId
+				   and position_type = :positionType
+				   and signal_status = 'ACTIVE'
+					  """;
+		return findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType);
+	}
+
+	/**
+	 * Used for close signals
+	 *
+	 * @param symbol
+	 * @param exchangeId
+	 * @param positionType
+	 * @return
+	 */
+	public boolean isAnyActiveCommandForSymbol(String symbol, long exchangeId, String positionType) {
+
+		String query = """				   
+				select p.signal_id, p.symbol, p.position_type, p.position_status, p.signal_status
+				from futures_positions p
 				   join futures_signal_command fsc on p.signal_id = fsc.signal_id
 				where symbol = :symbol
 				   and exchange_id = :exchangeId
@@ -89,7 +110,8 @@ public class FuturesSignalController {
 				and fsc.signal_action = 'CLOSE'
 				and fsc.status = 'CREATED'
 					  """;
-		return findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType);
+
+		return !findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType).isEmpty();
 	}
 
 	private List<FuturesSignal> findSignalsByPositionAndStatus(String query, String symbol, long exchangeId, String positionType) {
