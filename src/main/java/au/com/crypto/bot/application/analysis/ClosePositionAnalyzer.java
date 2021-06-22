@@ -38,12 +38,12 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
     }
 
     @Override
-    public synchronized void run() {
+    public synchronized void run(MarketEvent me) {
         try {
-            List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._close);
-            if (!positiveValues.isEmpty()) {
-                Log.information("{Class} - Found {Size} matches for the event", "ClosePositionAnalyzer", positiveValues.size());
-                for (Map<String, Object> match : positiveValues) {
+            List<Map<String, Object>> strategyMatches = analyzeStrategy(CONSTANTS._close);
+            if (!strategyMatches.isEmpty()) {
+                Log.information("{Class} - Found {Size} matches for the event", "ClosePositionAnalyzer", strategyMatches.size());
+                for (Map<String, Object> match : strategyMatches) {
                     try {
                         MarketEvent marketEvent = (MarketEvent) match.get(CONSTANTS._marketEvent);
                         Strategies.ConditionsGroup conditionsGroup = (Strategies.ConditionsGroup) match.get(CONSTANTS._strategy);
@@ -63,9 +63,10 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                 sp.getPositionType(), marketEvent.getExchangeId());
                         Log.information("{Class} - Checking for active signals - ActiveSignalsSize - {Size}",
                                 "ClosePositionAnalyzer", openSignals.size());
-                        if (sp.getExchangeId() == marketEvent.getExchangeId()) {
+                        if (sp.getExchangeId() == marketEvent.getExchangeId() && sp.getSymbol().equalsIgnoreCase(marketEvent.getSymbol())) {
                             if (!processedEvents.contains(key)) {
-                                if (!openSignals.isEmpty()) {
+                                if (!openSignals.isEmpty()
+                                        && !isAnyActiveCommandForSymbol(symbol, marketEvent.getExchangeId(), sp.getPositionType())) {
                                     //Assuming system will have one signal per symbol
                                     FuturesSignal fs = openSignals.get(0);
                                     trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
@@ -76,7 +77,6 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                                     "--- Position Status {PositionStatus}" +
                                                     "--- Symbol {Symbol}" +
                                                     "--- Position Type {PositionType}" +
-                                                    "--- Position Size {PositionSize}" +
                                                     "--- Signal Id {SignalId}" +
                                                     "--- Updated time {UpdatedTime}" +
                                                     "--- Created time {CreatedTime}",
@@ -85,7 +85,6 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                             , openSignals.get(0).getPositionStatus()
                                             , openSignals.get(0).getSymbol()
                                             , openSignals.get(0).getPositionType()
-                                            , openSignals.get(0).getPositionSize()
                                             , openSignals.get(0).getSignalId()
                                             , openSignals.get(0).getUpdatedDateTime()
                                             , openSignals.get(0).getCreatedDateTime()
@@ -100,10 +99,11 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                         "ClosePositionAnalyzer", symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
                         } else {
-                            Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
-                                            "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
+                            Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange {Exchange} or MarketEvent {Symbol} or " +
+                                            "Market event may not be related to this symbol- {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
+                                            "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey} - Strategy {StrategySymbol} Ready to place an order",
                                     "ClosePositionAnalyzer", marketEvent.getExchangeId(), symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
-                                    processedEvents.contains(key), key);
+                                    processedEvents.contains(key), key, sp.getSymbol());
                         }
 
                     } catch (Exception e) {
@@ -129,5 +129,10 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
     private List<FuturesSignal> getOpenSignalBySymbolWithPositionStatus(String symbol, String positionType, long exchangeId) {
         FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
         return futuresSignalController.findActiveSignalsWithPosition(symbol, exchangeId, positionType);
+    }
+
+    private boolean isAnyActiveCommandForSymbol(String symbol, long exchangeId, String positionType) {
+        FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
+        return futuresSignalController.isAnyActiveCommandForSymbol(symbol, exchangeId, positionType);
     }
 }

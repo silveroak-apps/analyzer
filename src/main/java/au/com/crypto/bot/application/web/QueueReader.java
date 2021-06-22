@@ -34,30 +34,30 @@ public class QueueReader {
         marketEvent.setContracts(contracts);
         marketEvent.setExchangeName(exchange);
         marketEvent.setExchangeId(ac.getExchange().findExchangeIdByName(exchange));
-        Events.getInstance().addMarketEvent(marketEvent);
+        Events.getInstance().addMarketEventToQueue(marketEvent);
         String id = mec.save(marketEvent);
         Log.information("{@Application}  -> " + "Successfully saved event from {@MarketSource}" +
                         " for Symbol {@Symbol}, {@Timeframe}, {@Name} -> {@id}",
                 "Analyzer", source,  symbol, timeframe, name, id);
-        analyzeStrategies(ac, props);
+        analyzeStrategies(ac, props, marketEvent);
 
     }
 
-    protected void analyzeStrategies(ApplicationControllers ac, Map<String, String> props) {
+    protected void analyzeStrategies(ApplicationControllers ac, Map<String, String> props, MarketEvent me) {
         //Analyze strategies
         String exchangeType = "";
         Trader trader = new FuturesTrader();
         if (props.get("exchangeType") != null)
             exchangeType = props.get("exchangeType");
         if (exchangeType.equalsIgnoreCase(CONSTANTS._futures)) {
-            OpenPositionAnalyzer.getInstance(ac, trader).run();
-            ClosePositionAnalyzer.getInstance(ac, trader).run();
+            OpenPositionAnalyzer.getInstance(ac, trader).run(me);
+            ClosePositionAnalyzer.getInstance(ac, trader).run(me);
         } else if (exchangeType.equalsIgnoreCase(CONSTANTS._spot)) {
-            SpotBuyAnalyzer.getInstance(ac, trader).run();
+            SpotBuyAnalyzer.getInstance(ac, trader).run(me);
         } else if (exchangeType.equalsIgnoreCase("ALL")) {
-            OpenPositionAnalyzer.getInstance(ac, trader).run();
-            ClosePositionAnalyzer.getInstance(ac, trader).run();
-            SpotBuyAnalyzer.getInstance(ac, trader).run();
+            OpenPositionAnalyzer.getInstance(ac, trader).run(me);
+            ClosePositionAnalyzer.getInstance(ac, trader).run(me);
+            SpotBuyAnalyzer.getInstance(ac, trader).run(me);
         }
     }
 }

@@ -8,6 +8,6 @@ import java.util.List;
 public interface MarketEventRepository extends CrudRepository<MarketEvent, Long>{
   List<MarketEvent> findSignalInfoById(String id);
   List<MarketEvent>  findAllByOrderByEventTimeDesc();
-  @Query(value = "select * from market_event me order by id desc limit 1000", nativeQuery=true)
-  List<MarketEvent> findAllEventsLimitThousand();
+  @Query(value = "select * from market_event me order by id desc limit 200", nativeQuery=true)
+  List<MarketEvent> findAllEventsLimitTwoHundred();
 }
