@@ -16,31 +16,31 @@ public class ConditionsGroupAnalyzerTest {
     public void init() {
         //Failed case
         events.addMarketEventToQueue(new MarketEvent("3bar_6h_alert","source", "json_message",
-                new Date(new Date().getTime() - 3600000), "BTCUSDT", new BigDecimal(50000.33), 100,
+                new Date(new Date().getTime() - 3600000), "BTCUSDT", new BigDecimal(50000.33), 100d,
                 "USDT", 21600));
         events.addMarketEventToQueue(new MarketEvent("2wave_cross_5m_alert","source", "json_message",
-                new Date(new Date().getTime() - 90000), "BTCUSDT", new BigDecimal(50010.33), 100,
+                new Date(new Date().getTime() - 90000), "BTCUSDT", new BigDecimal(50010.33), 100d,
                 "USDT", 300));
         events.addMarketEventToQueue(new MarketEvent("moneyflow_1m_alert","source", "json_message",
-                new Date(new Date().getTime() - 110000), "BTCUSDT", new BigDecimal(50005.33),100,
+                new Date(new Date().getTime() - 110000), "BTCUSDT", new BigDecimal(50005.33),100d,
                 "USDT", 60));
         events.addMarketEventToQueue(new MarketEvent("2wave_cross_5m_alert","source", "json_message",
-                new Date(new Date().getTime() - 83000), "BTCUSDT", new BigDecimal(50010.33),100,
+                new Date(new Date().getTime() - 83000), "BTCUSDT", new BigDecimal(50010.33),100d,
                 "USDT", 300));
         events.addMarketEventToQueue(new MarketEvent("moneyflow_1m_alert","source", "json_message",
-                new Date(new Date().getTime()), "BTCUSDT", new BigDecimal(50005.33),100,
+                new Date(new Date().getTime()), "BTCUSDT", new BigDecimal(50005.33),100d,
                 "USDT", 60));
         events.addMarketEventToQueue(new MarketEvent("2wave_cross_1h_alert","source", "json_message",
-                new Date(new Date().getTime() - 260000), "BTCUSDT", new BigDecimal(50000.33),110,
+                new Date(new Date().getTime() - 260000), "BTCUSDT", new BigDecimal(50000.33),110d,
                 "USDT", 60));
         events.addMarketEventToQueue(new MarketEvent("3bar_6h_alert","source", "json_message",
-                new Date(new Date().getTime() - 26033000), "BTCUSDT", new BigDecimal(50000.33),110,
+                new Date(new Date().getTime() - 26033000), "BTCUSDT", new BigDecimal(50000.33),110d,
                 "USDT", 21600));
         events.addMarketEventToQueue(new MarketEvent("3bar_6h_alert","source", "json_message",
-                new Date(new Date().getTime() - 260332000), "BTCUSDT", new BigDecimal(50000.33),110,
+                new Date(new Date().getTime() - 260332000), "BTCUSDT", new BigDecimal(50000.33),110d,
                 "USDT", 21600));
         events.addMarketEventToQueue(new MarketEvent("3bar_6h_alert","source", "json_message",
-                new Date(new Date().getTime() - 26098000), "BTCUSDT", new BigDecimal(50000.33),110,
+                new Date(new Date().getTime() - 26098000), "BTCUSDT", new BigDecimal(50000.33),110d,
                 "USDT", 21600));
 
 //        //Positive case
