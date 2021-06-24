@@ -140,9 +140,9 @@ public class PollAWSSQSService extends QueueReader {
         //TODO: push event to dead letter queue
         try {
             JSONObject messageJson = new JSONObject(m.body());
-            int contracts = -1;
+            double contracts = -1;
             if (messageJson.has("contracts")) {
-                contracts = messageJson.getInt("contracts");
+                contracts = messageJson.getDouble("contracts");
             }
             pushEvent(ac, ac.getMarketEventController(),
                     messageJson.getString("name"),

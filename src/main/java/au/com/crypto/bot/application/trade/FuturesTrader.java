@@ -31,7 +31,7 @@ public class FuturesTrader extends TraderImpl {
     public void raiseSignal(ApplicationControllers ac, long existingSignalId, double price, String symbol,
                             String tradeType,
                             String positionType, Strategies.ConditionsGroup conditionsGroup, String strategyPairName,
-                            Map<String, String> props, String market, int contracts, long exchangeId, long marketEventId, String exchangeName) {
+                            Map<String, String> props, String market, double contracts, long exchangeId, long marketEventId, String exchangeName) {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId);
@@ -43,7 +43,7 @@ public class FuturesTrader extends TraderImpl {
 
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
                                          String symbol, double price, String tradeType,
-                                         Strategies.ConditionsGroup conditionsGroup, String market, int eventContracts, Map<String, String> props, long marketEventId, String exchangeName) {
+                                         Strategies.ConditionsGroup conditionsGroup, String market, double eventContracts, Map<String, String> props, long marketEventId, String exchangeName) {
         FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
         FuturesSignalCommand fsCommand = new FuturesSignalCommand();
         fsCommand.setSignalId(signalId);
