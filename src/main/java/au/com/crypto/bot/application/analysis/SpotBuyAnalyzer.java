@@ -39,7 +39,7 @@ public class SpotBuyAnalyzer extends StrategyAnalyzer {
     @Override
     public synchronized void run(MarketEvent marketEvent) {
         try {
-            List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._open_n_close);
+            List<Map<String, Object>> positiveValues = analyzeStrategy(CONSTANTS._open_n_close, marketEvent);
 
             if (!positiveValues.isEmpty()) {
                 for (Map<String, Object> match : positiveValues) {

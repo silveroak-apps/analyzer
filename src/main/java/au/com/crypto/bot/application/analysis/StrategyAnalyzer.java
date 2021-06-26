@@ -19,7 +19,7 @@ public abstract class StrategyAnalyzer {
         this.trader = trader;
     }
 
-    public List<Map<String, Object>> analyzeStrategy(String strategyType)  {
+    public List<Map<String, Object>> analyzeStrategy(String strategyType, MarketEvent marketEvent) {
         Strategies strategies = LoadStrategies.getInstance().getStrategies();
         List<Map<String, Object>> strategyMatchList = new ArrayList<>();
         for (Strategies.Strategy sp : strategies.getStrategies()) {
@@ -30,7 +30,7 @@ public abstract class StrategyAnalyzer {
                 sp.getOpenConditionGroups().iterator()
                         .forEachRemaining(s -> {
                                     Map<String, Object> strategyMatch = new HashMap<>();
-                                    checkStrategy(s, strategyMatch);
+                                    checkStrategy(s, strategyMatch, marketEvent);
                                     if (!strategyMatch.isEmpty()) {
                                         strategyMatchList.add(strategyMatch);
                                         strategyMatch.put(CONSTANTS._strategy_pair, sp);
@@ -44,7 +44,7 @@ public abstract class StrategyAnalyzer {
                 sp.getCloseConditionGroups().iterator()
                         .forEachRemaining(s -> {
                                     Map<String, Object> strategyMatch = new HashMap<>();
-                                    checkStrategy(s, strategyMatch);
+                                    checkStrategy(s, strategyMatch, marketEvent);
                                     if (!strategyMatch.isEmpty()) {
                                         strategyMatchList.add(strategyMatch);
                                         strategyMatch.put(CONSTANTS._strategy_pair, sp);
@@ -55,15 +55,14 @@ public abstract class StrategyAnalyzer {
         return strategyMatchList;
     }
 
-    private void checkStrategy(Strategies.ConditionsGroup s, Map<String, Object> strategyMatch) {
+    private void checkStrategy(Strategies.ConditionsGroup s, Map<String, Object> strategyMatch, MarketEvent marketEvent) {
 
         List<Strategies.ConditionsGroup.Condition> conditions = s.getConditions();
         List<MarketEvent> filteredEvents = new ArrayList<>();
-        conditions.forEach(c -> checkCondition(c, filteredEvents));
+        conditions.forEach(c -> checkCondition(c, filteredEvents, marketEvent));
         if (filteredEvents.size() >= conditions.size()) {
-            checkSequence(filteredEvents, conditions, s, strategyMatch);
+            checkSequence(filteredEvents, conditions, s, strategyMatch, marketEvent);
         }
-
     }
 
     /**
@@ -107,11 +106,11 @@ public abstract class StrategyAnalyzer {
      * Event A   Event B Event C     Event D         Event E        Event F
      * Y           X     Z            Z              X               Z
      * Order X Y Z is valid
-     *
-     * @param filteredEvents
+     *  @param filteredEvents
      * @param conditions
+     * @param marketEvent
      */
-    private void checkSequence(List<MarketEvent> filteredEvents, List<Strategies.ConditionsGroup.Condition> conditions, Strategies.ConditionsGroup conditionsGroup, Map<String, Object> strategyMatch) {
+    private void checkSequence(List<MarketEvent> filteredEvents, List<Strategies.ConditionsGroup.Condition> conditions, Strategies.ConditionsGroup conditionsGroup, Map<String, Object> strategyMatch, MarketEvent marketEvent) {
         //Limited
         Collections.sort(conditions);
         Collections.sort(filteredEvents);
@@ -130,11 +129,18 @@ public abstract class StrategyAnalyzer {
                 }
             }
         }
+        // This means all conditions specified in strategy met
         if (filteredMarketEvents.size() == conditions.size()) {
-            MarketEvent marketEvent = filteredEvents.get(filteredEvents.size() - 1);
             strategyMatch.put(CONSTANTS._strategy, conditionsGroup);
-            strategyMatch.put(CONSTANTS._marketEvent, marketEvent);
-            Log.information("A match found for {Strategy}: {MarketEvent}", conditionsGroup.getConditionsName(), marketEvent);
+        } else {
+            Log.information("{Application} - {Function} - {MarketEventId} Some events matched with strategy conditions, " +
+                            "but unfortunately the sequence didn't match " +
+                            "{StrategyConditions} - {FilteredMarketEvents}",
+                    "Analyzer", "CheckConditions", marketEvent.getId(),
+                    conditions.stream().map(Strategies.ConditionsGroup.Condition::getName)
+                            .collect(Collectors.joining(", ")),
+                    new ArrayList<MarketEvent>(filteredMarketEvents.values()).stream().map(MarketEvent::getName)
+                            .collect(Collectors.joining(", ")));
         }
     }
 
@@ -148,34 +154,45 @@ public abstract class StrategyAnalyzer {
      * @param c
      * @param filteredEvents
      */
-    private void checkCondition(Strategies.ConditionsGroup.Condition c, List<MarketEvent> filteredEvents) {
+    private void checkCondition(Strategies.ConditionsGroup.Condition c, List<MarketEvent> filteredEvents, MarketEvent marketEvent) {
         List<MarketEvent> events = Events.getInstance().getMarketEvents();
-        Log.information("{CheckConditions} Market events found {Count} ", "CheckConditions", events.size());
+
         List<MarketEvent> eventsToProcess = events.stream()
                 .filter(e -> e.getTimeframe() == c.getTimeFrame())
                 .filter(e -> e.getCategory().equalsIgnoreCase(c.getCategory()))
                 .filter(e -> e.getSymbol().equalsIgnoreCase(c.getSymbol()))
                 .collect(Collectors.toList());
         long dateNow = (new Date()).getTime();
-        Log.information("{CheckConditions} Eligible Market events found {Count} ", "CheckConditions", eventsToProcess.size());
-        Log.information("{CheckConditions} Checking for condition match {Condition} ","CheckConditions", c.getName());
 
         //Filtering with Symbol, timeframe and sorting with latest on top
         Collections.sort(eventsToProcess, Collections.reverseOrder());
 
         List<MarketEvent> positiveMarketEvents = new ArrayList<>();
         if (eventsToProcess.size() <= 0) {
+            Log.information("{Application} - {Function} - {MarketEventId} No Eligible Market events found",
+                    "Analyzer", "CheckConditions", marketEvent.getId());
             return;
         } else {
+            //Assuming there will be two events per pair (always get the latest / category)
             MarketEvent event = eventsToProcess.get(0);
-            Log.information("{CheckConditions} TimeNow - {TimeNow}, {EventTimeEpoch}, {ConditionTimeEpoch} ","CheckConditions", dateNow,
-                    event.getEventTimeInEpoch(), c.getEpochForTimeFrame());
-            if (event.getName().equalsIgnoreCase(c.getName())) {
-                if (event.getEventTimeInEpoch() + c.getEpochForTimeFrame() > dateNow) {
-                    Log.information("{CheckConditions} A positive match found on a condition ","CheckConditions", c.getName());
+            try {
+                Log.information("{Application} - {Function} - {MarketEventId} " +
+                                "Name match - {Condition1}, Event time match {Condition2}", "Analyzer", "CheckConditions", marketEvent.getId(),
+                        event.getName().trim() +
+                                (event.getName().trim().equalsIgnoreCase(c.getName().trim()) ? " equals to " : " not equals to ")
+                                + c.getName().trim(),
+                        event.getEventTimeInEpoch() + c.getEpochForTimeFrame() > dateNow ?
+                                "With in the time limit (" + (dateNow - event.getEventTimeInEpoch() + c.getEpochForTimeFrame() / 1000) + " sec left)" :
+                                "Event expired (" + (event.getEventTimeInEpoch() + c.getEpochForTimeFrame() - dateNow / 1000) + " passed )");
+                if (event.getName().trim().equalsIgnoreCase(c.getName().trim()) && event.getEventTimeInEpoch() + c.getEpochForTimeFrame() > dateNow) {
                     positiveMarketEvents.add(event);
+                    Log.information("{Application} - {Function} - {MarketEventId} A positive match found on a condition ", "Analyzer",
+                            "CheckConditions", marketEvent.getId());
                 }
+            } catch (Exception e) {
+                Log.error(e, "{Application} - {Function} - {MarketEventId} Error in checking condition ", "Analyzer", "CheckConditions", marketEvent.getId());
             }
+
         }
         filteredEvents.addAll(positiveMarketEvents);
     }

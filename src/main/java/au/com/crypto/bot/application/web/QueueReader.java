@@ -36,9 +36,9 @@ public class QueueReader {
         marketEvent.setExchangeId(ac.getExchange().findExchangeIdByName(exchange));
         Events.getInstance().addMarketEventToQueue(marketEvent);
         String id = mec.save(marketEvent);
-        Log.information("{@Application}  -> " + "Successfully saved event from {@MarketSource}" +
-                        " for Symbol {@Symbol}, {@Timeframe}, {@Name} -> {@id}",
-                "Analyzer", source,  symbol, timeframe, name, id);
+        Log.information("{@Application} - {Function} - {MarketEventId} " + "Successfully saved event from {MarketSource}" +
+                        " for Symbol {@Symbol}, {Name}, {Category} {Timeframe}",
+                "Analyzer", "PersistEvent", id,source,  symbol, name, category, timeframe);
         analyzeStrategies(ac, props, marketEvent);
 
     }
