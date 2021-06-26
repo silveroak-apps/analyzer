@@ -73,9 +73,10 @@ public class FuturesTrader extends TraderImpl {
                     "with Position Type {PositionType}" +
                     "with Exchange {Exchange}" +
                     "with Strategy name {Strategy}" +
-                    "with contract multiplier {Multiplier}" +
                     "with marketEventId {MarketEventId}" +
-                    "with Leverage {Leverage}", "Analyzer", "SignalNCommand", marketEventId, signalCommandId, symbol, signalId, fsCommand.getQuantity(), tradeType, exchangeName, strategyPairName, marketEventId, leverage);
+                    "with Leverage {Leverage}", "Analyzer", "SignalNCommand", marketEventId,
+                    signalCommandId, symbol, signalId, fsCommand.getQuantity(),
+                    tradeType, exchangeName, strategyPairName, marketEventId, leverage);
             try {
                 Utils.triggerTrader(props.get("traderUrl"));
             } catch (Exception e) {
