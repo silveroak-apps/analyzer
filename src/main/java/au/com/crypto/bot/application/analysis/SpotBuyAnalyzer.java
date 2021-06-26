@@ -64,7 +64,7 @@ public class SpotBuyAnalyzer extends StrategyAnalyzer {
                 }
             }
         } catch (Exception e) {
-            Log.error(e, "{@Application} Error occurred in @{class}: ", "Analyzer",
+            Log.error(e, "{Application} Error occurred in @{class}: ", "Analyzer",
                     OpenPositionAnalyzer.class.getSimpleName(), e.getMessage());
         }
     }

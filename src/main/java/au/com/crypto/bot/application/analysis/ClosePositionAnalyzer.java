@@ -62,10 +62,10 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                 sp.getPositionType(), marketEvent.getExchangeId());
                         Log.information("{Application} - {Function} - {MarketEventId} - {Size} active Signals found ",
                                 "Analyzer", "ClosePositionAnalyzer", marketEvent.getId(), openSignals.size());
-                        if (sp.getExchangeId() == marketEvent.getExchangeId() && sp.getSymbol().equalsIgnoreCase(marketEvent.getSymbol())) {
+                        if (!openSignals.isEmpty()
+                                && !isAnyActiveCommandForSymbol(symbol, marketEvent.getExchangeId(), sp.getPositionType())) {
                             if (!processedEvents.contains(key)) {
-                                if (!openSignals.isEmpty()
-                                        && !isAnyActiveCommandForSymbol(symbol, marketEvent.getExchangeId(), sp.getPositionType())) {
+                                if (sp.getExchangeId() == marketEvent.getExchangeId() && sp.getSymbol().equalsIgnoreCase(marketEvent.getSymbol())) {
                                     //Assuming system will have one signal per symbol in one direction
                                     FuturesSignal fs = openSignals.get(0);
                                     trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
@@ -90,8 +90,10 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                             , openSignals.get(0).getCreatedDateTime()
                                     );
                                 } else {
-                                    Log.information("{Application} - {Function} - {MarketEventId} - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as there are no active positions in the system",
-                                            "Analyzer", "ClosePositionAnalyzer", marketEvent.getId(), symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
+                                    Log.information("{Application} - {Function} - {MarketEventId} - Not placing any signal command as this market event doesn't belong to " +
+                                                    "Exchange {Exchange} and Symbol {Symbol} in strategy in strategy - {Strategy}",
+                                            "Analyzer", "ClosePositionAnalyzer", marketEvent.getId(), marketEvent.getExchangeId(), symbol, sp);
+
                                 }
                                 processedEvents.add(key);
                             } else {
@@ -99,9 +101,8 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                                         "Analyzer", "ClosePositionAnalyzer", marketEvent.getId(), symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                             }
                         } else {
-                            Log.information("{Application} - {Function} - {MarketEventId} - Not placing any signal command as this market event doesn't belong to " +
-                                            "Exchange {Exchange} and Symbol {Symbol} in strategy in strategy - {@Strategy}",
-                                    "Analyzer", "ClosePositionAnalyzer", marketEvent.getId(), marketEvent.getExchangeId(), symbol, sp);
+                            Log.information("{Application} - {Function} - {MarketEventId} - Not placing any command for {Symbol} - {PositionType}- {MarketEvent} and {Strategy} as there are no active positions in the system",
+                                    "Analyzer", "ClosePositionAnalyzer", marketEvent.getId(), symbol, sp.getPositionType(), marketEvent, gson.toJson(conditionsGroup));
                         }
 
                     } catch (Exception e) {

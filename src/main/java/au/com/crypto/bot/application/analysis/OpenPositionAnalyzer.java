@@ -97,7 +97,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                 }
                             } else {
                                 Log.information("{Application} - {Function} - {MarketEventId} - Not placing any signal command as the event doesn't belong to " +
-                                                "Exchange {Exchange} and Symbol {Symbol} in strategy - {@Strategy}",
+                                                "Exchange {Exchange} and Symbol {Symbol} in strategy - {Strategy}",
                                         "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(), sp.getExchangeId(), symbol, sp);
                             }
                     } catch (Exception e) {

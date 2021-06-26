@@ -21,35 +21,35 @@ public class LogUtil {
         if (level.equalsIgnoreCase("ERROR")) {
             if (obj !=null) {
                 logger.error(message + obj);
-                Log.error("{@Application} " + clazz + " " + message + " {@obj} ", appName, obj);
+                Log.error("{Application} " + clazz + " " + message + " {obj} ", appName, obj);
             } else {
                 logger.error(message);
-                Log.error("{@Application} " + clazz + " " + message, appName);
+                Log.error("{Application} " + clazz + " " + message, appName);
             }
 
         } else if (level.equalsIgnoreCase("DEBUG")) {
             if (obj !=null) {
                 logger.debug(message + obj);
-                Log.debug("{@Application} " + clazz + " " + message+ " {@obj} ", appName, obj);
+                Log.debug("{Application} " + clazz + " " + message+ " {obj} ", appName, obj);
             } else {
                 logger.debug(message);
-                Log.debug("{@Application} " + clazz + " " + message, appName);
+                Log.debug("{Application} " + clazz + " " + message, appName);
             }
         } else if (level.equalsIgnoreCase("INFO")) {
             if (obj !=null) {
                 logger.info(message + obj);
-                Log.information("{@Application} " + clazz + " " + message+ " {@obj} ", appName, obj);
+                Log.information("{Application} " + clazz + " " + message+ " {obj} ", appName, obj);
             } else {
                 logger.info(message);
-                Log.information("{@Application} " +clazz + " " + message, appName);
+                Log.information("{Application} " +clazz + " " + message, appName);
             }
         } else if (level.equalsIgnoreCase("WARNING")) {
             if (obj !=null) {
                 logger.warn(message + obj);
-                Log.warning("{@Application} " + clazz + " " + message+ " {@obj} ", appName, obj);
+                Log.warning("{Application} " + clazz + " " + message+ " {obj} ", appName, obj);
             } else {
                 logger.warn(message);
-                Log.warning("{@Application} " + clazz + " " + message, appName);
+                Log.warning("{Application} " + clazz + " " + message, appName);
             }
         }
 

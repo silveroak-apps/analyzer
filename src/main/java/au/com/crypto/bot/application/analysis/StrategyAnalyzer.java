@@ -21,8 +21,10 @@ public abstract class StrategyAnalyzer {
 
     public List<Map<String, Object>> analyzeStrategy(String strategyType, MarketEvent marketEvent) {
         Strategies strategies = LoadStrategies.getInstance().getStrategies();
+        List<Strategies.Strategy> strategyList = strategies.getStrategies().stream().
+                filter(s -> s.getExchangeId() == marketEvent.getExchangeId()).collect(Collectors.toList());
         List<Map<String, Object>> strategyMatchList = new ArrayList<>();
-        for (Strategies.Strategy sp : strategies.getStrategies()) {
+        for (Strategies.Strategy sp : strategyList) {
             LogContext.pushProperty("Strategy", sp.getStrategyName());
             LogContext.pushProperty("Application", "Analyzer");
             //For Open Strategies - Open and Close is for spot
@@ -161,6 +163,7 @@ public abstract class StrategyAnalyzer {
                 .filter(e -> e.getTimeframe() == c.getTimeFrame())
                 .filter(e -> e.getCategory().equalsIgnoreCase(c.getCategory()))
                 .filter(e -> e.getSymbol().equalsIgnoreCase(c.getSymbol()))
+                .filter(e -> e.getExchangeId().equals(marketEvent.getExchangeId()))
                 .collect(Collectors.toList());
         long dateNow = (new Date()).getTime();
 
@@ -169,15 +172,15 @@ public abstract class StrategyAnalyzer {
 
         List<MarketEvent> positiveMarketEvents = new ArrayList<>();
         if (eventsToProcess.size() <= 0) {
-            Log.information("{Application} - {Function} - {MarketEventId} No Eligible Market events found",
-                    "Analyzer", "CheckConditions", marketEvent.getId());
+            Log.information("{Application} - {Function} - {MarketEventId} - {Exchange} No Eligible Market events found",
+                    "Analyzer", "CheckConditions", marketEvent.getId(), marketEvent.getExchangeName());
             return;
         } else {
             //Assuming there will be two events per pair (always get the latest / category)
             MarketEvent event = eventsToProcess.get(0);
             try {
                 Log.information("{Application} - {Function} - {MarketEventId} " +
-                                "Name match - {Condition1}, Event time match {Condition2}", "Analyzer", "CheckConditions", marketEvent.getId(),
+                                "Trying Name match - {Condition1}, Event time match {Condition2}", "Analyzer", "CheckConditions", marketEvent.getId(),
                         event.getName().trim() +
                                 (event.getName().trim().equalsIgnoreCase(c.getName().trim()) ? " equals to " : " not equals to ")
                                 + c.getName().trim(),

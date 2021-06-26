@@ -98,9 +98,9 @@ public class LoadStrategies {
 //        if (strategies.getStrategies() == null || strategies.getStrategies().size() == 0) {
 //            throw new Exception("NO Strategies found" );
 //        }
-        Log.information("{@Application} Successfully loaded strategies, {Count} ", "Analyzer", (strategies.getStrategies() == null ? 0 : strategies.getStrategies().size()));
+        Log.information("{Application} Successfully loaded strategies, {Count} ", "Analyzer", (strategies.getStrategies() == null ? 0 : strategies.getStrategies().size()));
         if (strategies.getStrategies() != null) {
-            strategies.getStrategies().forEach(s -> Log.information("{@Application} Strategies - {Strategy} ", "Analyzer", s.getStrategyName()));
+            strategies.getStrategies().forEach(s -> Log.information("{Application} Strategies - {Strategy} ", "Analyzer", s.getStrategyName()));
         }
 
         setStrategies(strategies);

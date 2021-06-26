@@ -48,7 +48,7 @@ public class ExchangeController {
 		try {
 			exchangeId = repository.findExchangeByName(exchangeName).getId();
 		} catch (Exception e){
-			Log.error("{@Application}  -> " + "Unable to find exchange name {@Exchange}", exchangeName);
+			Log.error("{Application}  -> " + "Unable to find exchange name {Exchange}", exchangeName);
 		}
 		return exchangeId;
 	}

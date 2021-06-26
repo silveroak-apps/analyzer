@@ -83,7 +83,7 @@ public class FuturesTrader extends TraderImpl {
                 Log.error(e, "{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} Error Raising http signal to trader", "Analyzer", "SignalNCommand", marketEventId, signalId, exchangeName);
             }
         } else {
-            Log.error("{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} WRONG SIGNAL OR NO CONTRACTS - " +
+            Log.warning("{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} WRONG SIGNAL OR NO CONTRACTS - " +
                     "Symbol: {Symbol} - Contracts: {Contracts} ",
                     "Analyzer", "SignalNCommand", marketEventId,signalId, exchangeName, symbol,
                     getDefaultContractsFromDB(ac, symbol, exchangeName, marketEventId,signalId));
