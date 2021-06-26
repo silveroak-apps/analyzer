@@ -38,7 +38,7 @@ public class QueueReader {
         String id = mec.save(marketEvent);
         Log.information("{Application} - {Function} - {MarketEventId} " + "Successfully saved event from {MarketSource}" +
                         " for Symbol {Symbol}, {Name}, {Category} {Timeframe}",
-                "Analyzer", "PersistEvent", id,source,  symbol, name, category, timeframe);
+                "Analyzer", "SaveEvent", id,source,  symbol, name, category, timeframe);
         analyzeStrategies(ac, props, marketEvent);
 
     }

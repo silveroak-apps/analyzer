@@ -35,8 +35,8 @@ public class FuturesTrader extends TraderImpl {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
             signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId, marketEventId);
-            Log.information(" {Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} Successfully saved a signal @{Symbol} with signal id @{SignalId}",
-                    "Analyzer", "SignalNCommand", marketEventId, signalId, exchangeName, symbol, tradeType);
+            Log.information(" {Application} - {Function} - {MarketEventId} - {Exchange} Successfully saved a signal {Symbol} for action type {ActionType} with signal id {SignalId}",
+                    "Analyzer", "SignalAndCommand", marketEventId, exchangeName, symbol, tradeType, signalId);
         }
         saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props, marketEventId, exchangeName);
     }
@@ -74,18 +74,18 @@ public class FuturesTrader extends TraderImpl {
                     "with Exchange {Exchange}" +
                     "with Strategy name {Strategy}" +
                     "with marketEventId {MarketEventId}" +
-                    "with Leverage {Leverage}", "Analyzer", "SignalNCommand", marketEventId,
+                    "with Leverage {Leverage}", "Analyzer", "SignalAndCommand", marketEventId,
                     signalCommandId, symbol, signalId, fsCommand.getQuantity(),
                     tradeType, exchangeName, strategyPairName, marketEventId, leverage);
             try {
                 Utils.triggerTrader(props.get("traderUrl"));
             } catch (Exception e) {
-                Log.error(e, "{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} Error Raising http signal to trader", "Analyzer", "SignalNCommand", marketEventId, signalId, exchangeName);
+                Log.error(e, "{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} Error Raising http signal to trader", "Analyzer", "SignalAndCommand", marketEventId, signalId, exchangeName);
             }
         } else {
             Log.warning("{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} WRONG SIGNAL OR NO CONTRACTS - " +
                     "Symbol: {Symbol} - Contracts: {Contracts} ",
-                    "Analyzer", "SignalNCommand", marketEventId,signalId, exchangeName, symbol,
+                    "Analyzer", "SignalAndCommand", marketEventId,signalId, exchangeName, symbol,
                     getDefaultContractsFromDB(ac, symbol, exchangeName, marketEventId,signalId));
         }
 
@@ -111,7 +111,7 @@ public class FuturesTrader extends TraderImpl {
         fs.setSymbol(symbol);
         FuturesSignalController fsc = ac.getFuturesSignalController();
         long signalId = fsc.save(fs);
-        Log.information("{Application} - {Function} - {MarketEventId} Successfully saved a future signal {Symbol} signal id {SignalId}", "Analyzer", "SignalNCommand", marketEventId, symbol, signalId);
+        Log.information("{Application} - {Function} - {MarketEventId} Successfully saved a future signal {Symbol} signal id {SignalId}", "Analyzer", "SignalAndCommand", marketEventId, symbol, signalId);
         return signalId;
     }
 
@@ -122,7 +122,7 @@ public class FuturesTrader extends TraderImpl {
             if (contracts.containsKey(symbol))
                 returnValue = Double.parseDouble(contracts.get(symbol));
         } catch (Exception e) {
-            Log.error(e, "{Application} - {Function} - {MarketEventId} - {SignalId} Error in parsing contract config value, check config table, expecting a double", "Analyzer", "SignalNCommand", marketEventId, signalId);
+            Log.error(e, "{Application} - {Function} - {MarketEventId} - {SignalId} Error in parsing contract config value, check config table, expecting a double", "Analyzer", "SignalAndCommand", marketEventId, signalId);
         }
         return returnValue;
     }
