@@ -14,6 +14,8 @@ import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.LogUtil;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import au.com.crypto.bot.application.web.PollAWSSQSService;
+import au.com.crypto.bot.application.web.pushover.PushoverHelper;
+import au.com.crypto.bot.application.web.pushover.PushoverMessage;
 import io.advantageous.boon.core.Str;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -58,6 +60,8 @@ public class AnalyzerApplication {
         //Assuming the script always run with 2 arguments
         try {
             signal_queue = args[0];
+            String message = "application started with aws queue " + signal_queue;
+            PushoverHelper.sendPushOverMessage(message);
         } catch (Exception e) {
             Log.warning("AWS queue name hasn't specified, system will use local queue");
         }
