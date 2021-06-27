@@ -18,7 +18,7 @@ public class PushoverHelper {
                         .setUserId(System.getenv("Pushover__UserKey"))
                         .setMessage(message)
                         .build());
-            
+
         }catch (Exception e) {
             Log.error(e, "Error raising alert with pushover");
         }

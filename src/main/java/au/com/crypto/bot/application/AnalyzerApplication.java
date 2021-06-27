@@ -60,8 +60,6 @@ public class AnalyzerApplication {
         //Assuming the script always run with 2 arguments
         try {
             signal_queue = args[0];
-            String message = "application started with aws queue " + signal_queue;
-            PushoverHelper.sendPushOverMessage(message);
         } catch (Exception e) {
             Log.warning("AWS queue name hasn't specified, system will use local queue");
         }
