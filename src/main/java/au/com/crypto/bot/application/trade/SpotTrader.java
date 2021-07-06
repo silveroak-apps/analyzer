@@ -17,7 +17,7 @@ public class SpotTrader extends TraderImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(SpotTrader.class);
 
-    //Will ignore the singal id
+    //Will ignore the signal id
     @Override
     public void raiseSignal(ApplicationControllers ac, long existingSignalId, double price, String symbol,
                             String tradeType,
@@ -35,7 +35,7 @@ public class SpotTrader extends TraderImpl {
             if (trigger.equals(CONSTANTS._sell)) {
                 String signalId = placeSignal(pos, symbol, pos.getBuyPrice().doubleValue(), price, market, trigger, positiveSignalController,
                         existingSignal.getSignalDate(), new Date(), props, strategy);
-                Log.information("Successfully updated {@SignalId} for strategy {@Strategy} for the symbol {@Symbol}", signalId);
+                Log.information("Successfully updated {SignalId} for strategy {Strategy} for the symbol {Symbol}", signalId, strategy, symbol);
             } else {
                 Log.information("Position already exist, no change in position for {SignalId} ", pos.getSignal_id());
             }
@@ -43,7 +43,7 @@ public class SpotTrader extends TraderImpl {
             pos = new PositiveSignal();
             if (!trigger.equals(CONSTANTS._sell)) {
                 String signalId = placeSignal(pos, symbol, price, 0, market, trigger, positiveSignalController, new Date(), null, props, strategy);
-                Log.information("Successfully posted signal {@SignalId} for strategy {@Strategy} for the symbol {@Symbol}", signalId,
+                Log.information("Successfully posted signal {SignalId} for strategy {Strategy} for the symbol {Symbol}", signalId,
                         strategy, symbol);
             } else {
                 Log.information("Position already exist, no change in position for {SignalId} ", pos.getSignal_id());

@@ -47,13 +47,13 @@ public class PollAWSSQSService extends QueueReader {
                         Thread.sleep(1000);
                     } catch (Exception e) {
                         LogUtil.printLog(logger, LogUtil.STATUS.ERROR.name(), PollAWSSQSService.class.getSimpleName(), "Exception in executing sleep " + e);
-                        Log.error(e, "Exception in executing sleep");
+                        Log.error(e, "{Application} - {Function} Exception in executing sleep","Analyzer","AWSQueueListener");
                     }
                 }
 
             });
         }else {
-            Log.warning("Specified queue isn't exist in AWS, system will use local queue");
+            Log.warning("{Application} - {Function} Specified queue isn't exist in AWS, system will use local queue","Analyzer","AWSQueueListener");
         }
 
     }
@@ -80,7 +80,7 @@ public class PollAWSSQSService extends QueueReader {
         LogContext.pushProperty("Application", getClass().getSimpleName());
         props = PropertyUtil.getProperties();
         QUEUE_NAME = queueName;
-        Log.information("New thread: started for {QueueName}", queueName);
+        Log.information("{Application} - {Function} New thread: started for {QueueName}", "Analyzer","AWSQueueListener", queueName);
         this.ac = ac;
     }
 
@@ -106,21 +106,20 @@ public class PollAWSSQSService extends QueueReader {
                         .attributeNamesWithStrings("All")
                         .build();
                 List<Message> messages = sqsClient.receiveMessage(receiveRequest).messages();
-                LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Number of messages in queue =  @{QueueLength}", messages.size());
+                Log.information("{Application} - {Function} Number of messages in queue =  @{QueueLength}","Analyzer","AWSQueueListener", messages.size());
                 // Print out the messages
                 for (Message m : messages) {
-                    LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Message from AWS queue" + m.body());
+                    Log.information("{Application} - {Function} Message from AWS queue {Message}", "Analyzer","AWSQueueListener",m.body());
                     processMessage(m);
-                    LogUtil.printLog(logger, LogUtil.STATUS.INFO.name(), PollAWSSQSService.class.getSimpleName(), "Processing finished and deleting message -- " + m.messageId());
+                    Log.information("{Application} - {Function} Processing finished and deleting message -- {MessageId}","Analyzer","AWSQueueListener",  m.messageId());
                     deleteMessageFromQueue(sqsClient, queueUrl, m);
                 }
             } catch (QueueNameExistsException e) {
-                Log.error(e, "Error in getting messages from queue, queue may not be exist");
+                Log.error(e, "{Application} - {Function} Error in getting messages from queue, queue may not be exist ","Analyzer","AWSQueueListener");
                 throw e;
             }
         } catch (Exception e) {
-            LogUtil.printLog(logger, LogUtil.STATUS.ERROR.name(), PollAWSSQSService.class.getSimpleName(), "Exception in executing method" + e);
-            Log.error(e, "Error in getting messages from AWS queue");
+            Log.error(e, "{Application} - {Function} Error in getting messages from AWS queue","Analyzer","AWSQueueListener");
             e.printStackTrace();
         }
     }
@@ -157,7 +156,7 @@ public class PollAWSSQSService extends QueueReader {
                     messageJson.toString(), props, "tradingView");
 
         } catch (Exception e) {
-            Log.error(e, "Error in processing message from queue -> ", m.messageId());
+            Log.error(e, "{Application} - {Function} Error in processing message from queue -> ", "Analyzer","AWSQueueListener", m.messageId());
         }
     }
 

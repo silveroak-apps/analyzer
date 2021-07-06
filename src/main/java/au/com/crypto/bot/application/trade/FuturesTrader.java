@@ -34,11 +34,11 @@ public class FuturesTrader extends TraderImpl {
                             Map<String, String> props, String market, double contracts, long exchangeId, long marketEventId, String exchangeName) {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
-            signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId);
-            Log.information("{@Application} Successfully saved a signal @{Symbol} with signal id @{SignalId}", "Analyzer", symbol, signalId, tradeType);
+            signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId, marketEventId);
+            Log.information(" {Application} - {Function} - {MarketEventId} - {Exchange} Successfully saved a signal {Symbol} for action type {ActionType} with signal id {SignalId}",
+                    "Analyzer", "SignalAndCommand", marketEventId, exchangeName, symbol, tradeType, signalId);
         }
         saveFutureSignalCommand(ac, signalId, conditionsGroup.getConditionsName(), symbol, price, tradeType, conditionsGroup, market, contracts, props, marketEventId, exchangeName);
-        Log.information("{@Application} Successfully added command @{Symbol} with signal id @{SignalId} to {TradeType}", "Analyzer", symbol, signalId, tradeType);
     }
 
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
@@ -60,34 +60,39 @@ public class FuturesTrader extends TraderImpl {
         if (tradeType.equalsIgnoreCase(CONSTANTS._close)) {
             contracts = getActiveContracts(ac, signalId);
         } else if (eventContracts <= 0) {
-            contracts = getDefaultContractsFromDB(ac, symbol, exchangeName);
+            contracts = getDefaultContractsFromDB(ac, symbol, exchangeName, marketEventId, signalId);
         } else {
-            contracts = getContractsByMarket(market, eventContracts, price);
+            contracts = getContractsByMarket(market, eventContracts, price, marketEventId);
         }
 
         if (contracts != 0) {
             fsCommand.setQuantity(BigDecimal.valueOf(contracts));
-            fscController.save(fsCommand);
-            Log.information("{@Application} Successfully saved for @{Symbol} with signal id @{SignalId} " +
+            String signalCommandId = fscController.save(fsCommand);
+            Log.information("{Application} - {Function} - {MarketEventId} - {SignalCommandId} Successfully placed a command for @{Symbol} with signal id {SignalId} " +
                     "with Contracts From Active Position {Contracts}" +
                     "with Position Type {PositionType}" +
+                    "with Exchange {Exchange}" +
                     "with Strategy name {Strategy}" +
-                    "with contract multiplier {Multiplier}" +
                     "with marketEventId {MarketEventId}" +
-                    "with Leverage {Leverage}", "Analyzer", symbol, signalId, fsCommand.getQuantity(), tradeType, strategyPairName, marketEventId, leverage);
+                    "with Leverage {Leverage}", "Analyzer", "SignalAndCommand", marketEventId,
+                    signalCommandId, symbol, signalId, fsCommand.getQuantity(),
+                    tradeType, exchangeName, strategyPairName, marketEventId, leverage);
             try {
                 Utils.triggerTrader(props.get("traderUrl"));
             } catch (Exception e) {
-                Log.error(e, "Error Raising http signal to trader");
+                Log.error(e, "{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} Error Raising http signal to trader", "Analyzer", "SignalAndCommand", marketEventId, signalId, exchangeName);
             }
         } else {
-            Log.error("WRONG SIGNAL OR NO CONTRACTS - Symbol: {Symbol} - Contracts: {Contracts} ", symbol, getDefaultContractsFromDB(ac, symbol, exchangeName));
+            Log.warning("{Application} - {Function} - {MarketEventId} - {SignalId} - {Exchange} WRONG SIGNAL OR NO CONTRACTS - " +
+                    "Symbol: {Symbol} - Contracts: {Contracts} ",
+                    "Analyzer", "SignalAndCommand", marketEventId,signalId, exchangeName, symbol,
+                    getDefaultContractsFromDB(ac, symbol, exchangeName, marketEventId,signalId));
         }
 
     }
 
 
-    private double getContractsByMarket(String market, double contracts, double price) {
+    private double getContractsByMarket(String market, double contracts, double price, long marketEventId) {
         double contractsPerType = market.equalsIgnoreCase("USDT") ? contracts : (contracts * price) / 10;
         int scale = 4;
         return BigDecimal.valueOf(contractsPerType).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -97,7 +102,7 @@ public class FuturesTrader extends TraderImpl {
         return ac.getFuturesSignalController().getActiveContractsFromDB(signalId);
     }
 
-    private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName, long exchangeId) {
+    private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName, long exchangeId, long marketEventId) {
         FuturesSignal fs = new FuturesSignal();
         fs.setExchangeId(exchangeId);
         fs.setCreatedDateTime(new Date());
@@ -106,18 +111,18 @@ public class FuturesTrader extends TraderImpl {
         fs.setSymbol(symbol);
         FuturesSignalController fsc = ac.getFuturesSignalController();
         long signalId = fsc.save(fs);
-        Log.information("{@Application} Successfully saved a future signal @{Symbol} signal id @{SignalId}", "Analyzer", symbol, signalId);
+        Log.information("{Application} - {Function} - {MarketEventId} Successfully saved a future signal {Symbol} signal id {SignalId}", "Analyzer", "SignalAndCommand", marketEventId, symbol, signalId);
         return signalId;
     }
 
-    private Double getDefaultContractsFromDB(ApplicationControllers ac, String symbol, String exchangeName) {
+    private Double getDefaultContractsFromDB(ApplicationControllers ac, String symbol, String exchangeName, long marketEventId, long signalId) {
         double returnValue = 0d;
         try {
             Map<String, String> contracts = LoadConfigs.getConfig(ac, exchangeName);
             if (contracts.containsKey(symbol))
                 returnValue = Double.parseDouble(contracts.get(symbol));
         } catch (Exception e) {
-            Log.error(e, "Error in parsing contract config value, check config table, expecting a double");
+            Log.error(e, "{Application} - {Function} - {MarketEventId} - {SignalId} Error in parsing contract config value, check config table, expecting a double", "Analyzer", "SignalAndCommand", marketEventId, signalId);
         }
         return returnValue;
     }
@@ -129,7 +134,7 @@ public class FuturesTrader extends TraderImpl {
             if (contracts.containsKey(symbol))
                 returnValue = Double.parseDouble(contracts.get(symbol));
         } catch (Exception e) {
-            Log.error(e, "Error in parsing contract config value, check config table, expecting a double");
+            Log.error(e, "{Application} - {Function} - {MarketEventId} Error in parsing contract config value, check config table, expecting a double");
         }
         return returnValue;
     }

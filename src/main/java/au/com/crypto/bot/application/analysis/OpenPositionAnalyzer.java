@@ -42,21 +42,19 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
     public synchronized void run(MarketEvent marketEvent) {
         try {
 
-            List<Map<String, Object>> positiveSignalMatches = analyzeStrategy(CONSTANTS._open);
+            List<Map<String, Object>> positiveSignalMatches = analyzeStrategy(CONSTANTS._open, marketEvent);
             if (!positiveSignalMatches.isEmpty()) {
                 for (Map<String, Object> match : positiveSignalMatches) {
                     try {
                         Strategies.ConditionsGroup conditionsGroup = (Strategies.ConditionsGroup) match.get(CONSTANTS._strategy);
                         Strategies.Strategy sp = (Strategies.Strategy) match.get(CONSTANTS._strategy_pair);
                         String key = marketEvent.getId()+"_"+ conditionsGroup.getConditionsName()+"_"+ sp.getStrategyId();
-                        try (var me = LogContext.pushProperty("MarketEventName", marketEvent.getName())) {
-                        try (var spn = LogContext.pushProperty("StrategyPairName", sp.getStrategyName())) {
-                        try (var sn = LogContext.pushProperty("StrategyName", conditionsGroup.getConditionsName())) {
-                        try (var an = LogContext.pushProperty("Application", getClass().getSimpleName())) {
                             String symbol = sp.getSymbol();
-                            Log.information("{Claas} - Found a match for {Symbol} - {PositionType}- MarketEvent  {MarketEvent} - {MarketEventId} and {Strategy} " +
-                                            "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
-                                    "OpenPositionAnalyzer", symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
+                            Log.information("{Application} - {Function} - {MarketEventId} - Found a match for " +
+                                            "{Symbol} - {PositionType} MarketEvent - {MarketEvent} and {Strategy} " +
+                                            "isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
+                                    "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(), symbol,
+                                    sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
                                     processedEvents.contains(key), key);
 
                             var openSignals = getOpenSignalBySymbol(symbol,
@@ -67,11 +65,12 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                         trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                                                 CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                                 props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId(), marketEvent.getExchangeName());
-                                        Log.information("{Class} - No Open Signals on this symbol {Symbol} for market event {MarketEvent} Id: {MarketEventId} and raised a new signal",
-                                                "OpenPositionAnalyzer", symbol, marketEvent, marketEvent.getId());
+                                        Log.information("{Application} - {Function} - {MarketEventId} - No Open Signals on this symbol {Symbol} for market event {MarketEvent} Id: {MarketEventId} and raised a new signal",
+                                                "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(), symbol, marketEvent, marketEvent.getId());
                                         processedEvents.add(key);
                                     } else {
-                                        Log.information("{Class} - {Application} Found an active / created / unknown signal - {Strategy}" +
+                                        Log.information("{Application} - {Function} - {MarketEventId} Found an active / created / unknown signal - {Strategy}" +
+                                                        "Not placing any new command" +
                                                         "--- Signal Status {SignalStatus}" +
                                                         "--- Position Status {PositionStatus}" +
                                                         "--- Symbol {Symbol}" +
@@ -80,8 +79,8 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                                         "--- Updated time {UpdatedTime}" +
                                                         "--- Created time {CreatedTime}" +
                                                         "--- Market event id {MarketEventId}",
-                                                "OpenPositionAnalyzer"
-                                                , "Analyzer", conditionsGroup.getConditionsName()
+                                                "Analyzer", "OpenPositionAnalyzer", marketEvent.getId()
+                                                , conditionsGroup.getConditionsName()
                                                 , openSignals.get(0).getSignalStatus()
                                                 , openSignals.get(0).getPositionStatus()
                                                 , openSignals.get(0).getSymbol()
@@ -93,29 +92,23 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                         );
                                     }
                                 } else {
-                                    Log.information("{Class}} - Event already processed {Symbol} for the {Event} and id {Id}", "OpenPositionAnalyzer", symbol, marketEvent.getName(), marketEvent.getId());
+                                    Log.information("{Application} - {Function} - {MarketEventId} - Event already processed {Symbol} for the {Event} and id {Id}",
+                                            "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(), symbol, marketEvent.getName(), marketEvent.getId());
                                 }
                             } else {
-                                Log.information("{Claas} - Not placing any signal command as there is no active signal for this exchange " +
-                                                "{Exchange} or {Symbol} or the event may not belong to this symbol- {PositionType}- MarketEvent  {MarketEvent} - " +
-                                                "{MarketEventId} and {Strategy} " +
-                                                "- isMarketEventProcessed - {isMarketEventProcessed} - {StrategyKey}- Ready to place an order",
-                                        "OpenPositionAnalyzer", marketEvent.getExchangeId(), symbol, sp.getPositionType(), marketEvent, marketEvent.getId(), conditionsGroup,
-                                        processedEvents.contains(key), key);
+                                Log.information("{Application} - {Function} - {MarketEventId} - Not placing any signal command as the event doesn't belong to " +
+                                                "Exchange {Exchange} and Symbol {Symbol} in strategy - {Strategy}",
+                                        "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(), sp.getExchangeId(), symbol, sp);
                             }
-                        }
-                        }
-                        }
-                        } // try-with-resources: LogContext
                     } catch (Exception e) {
-                        Log.error(e, "{Class} - {Application} Error occurred: in placing a signal ", "OpenPositionAnalyzer", "Analyzer", e.getMessage());
+                        Log.error(e, "{Application} - {Function} - {MarketEventId} Error occurred: in placing a signal ", "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(), e.getMessage());
                     }
                 }
             } else {
-                Log.information("{Class} - {Application} No positive matches found for active strategies and market events ", "OpenPositionAnalyzer", "Analyzer");
+                Log.information("{Application} - {Function} - {MarketEventId} No positive matches found for active strategies and market events ", "Analyzer", "OpenPositionAnalyzer", marketEvent.getId());
             }
         } catch (Exception e) {
-            Log.error(e, "{Class} - {@Application} Error occurred in @{class}: ", "OpenPositionAnalyzer", "Analyzer",
+            Log.error(e, "{Application} - {Function} - {MarketEventId} Error occurred in @{class}: ", "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(),
                     OpenPositionAnalyzer.class.getSimpleName(), e.getMessage());
         }
     }

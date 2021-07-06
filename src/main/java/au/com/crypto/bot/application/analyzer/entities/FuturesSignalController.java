@@ -131,6 +131,7 @@ public class FuturesSignalController {
 			fs.setPositionType((String)obj[2]);
 			fs.setPositionStatus((String)obj[3]);
 			fs.setSignalStatus((String)obj[4]);
+			fs.setExchangeId(exchangeId);
 			listFS.add(fs);
 		}
 
