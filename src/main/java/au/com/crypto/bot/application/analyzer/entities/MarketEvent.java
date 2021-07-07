@@ -52,7 +52,7 @@ public class MarketEvent implements Comparable<MarketEvent>{
     private long timeframe;
 
     @Column(name = "contracts")
-    private Integer contracts;
+    private Double contracts;
 
     @Column(name = "exchange")
     private Long exchangeId;
@@ -86,7 +86,7 @@ public class MarketEvent implements Comparable<MarketEvent>{
     }
 
     public MarketEvent(String name, String source, String message,
-                       Date eventTime, String symbol, BigDecimal price, int contracts,
+                       Date eventTime, String symbol, BigDecimal price, double contracts,
                        String market, long timeframe) {
         this.setName(name);
         this.setMarket(market);
@@ -229,13 +229,13 @@ public class MarketEvent implements Comparable<MarketEvent>{
         return getEventTime().compareTo(me.getEventTime());
     }
 
-    public Integer getContracts() {
+    public Double getContracts() {
         if (contracts == null)
-            setContracts(-1);
+            setContracts(-1d);
         return contracts;
     }
 
-    public void setContracts(Integer contracts) {
+    public void setContracts(Double contracts) {
         this.contracts = contracts;
     }
 }

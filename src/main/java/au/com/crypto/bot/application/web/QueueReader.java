@@ -19,7 +19,7 @@ import java.util.Map;
 public class QueueReader {
 
     protected void pushEvent(ApplicationControllers ac, MarketEventController mec, String name, double price, String symbol, String market,
-                             long timeframe, String exchange, int contracts, String category,
+                             long timeframe, String exchange, double contracts, String category,
                              long epoch, String event, Map<String, String> props, String source) {
         MarketEvent marketEvent = new MarketEvent();
         marketEvent.setMessage(event);
