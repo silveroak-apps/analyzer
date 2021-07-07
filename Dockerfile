@@ -6,7 +6,7 @@ RUN yum update -y \
   # The --bin-dir is specified so that we can copy the
   # entire bin directory from the installer stage into
   # into /usr/local/bin of the final stage without
-  # accidentally copying over any other executables that
+  # accidentally copying over any other executables that 
   # may be present in /usr/local/bin of the installer stage.
   && ./aws/install --bin-dir /aws-cli-bin/
 
