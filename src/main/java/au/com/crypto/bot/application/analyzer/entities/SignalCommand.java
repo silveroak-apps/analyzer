@@ -74,7 +74,15 @@ public class SignalCommand {
     private long marketEventId;
 
     @Column(name = "strategy_condition_id")
-    private long strategy_condition_id;
+    private long strategyConditionId;
+
+    public long getStrategyConditionId() {
+        return strategyConditionId;
+    }
+
+    public void setStrategyConditionId(long strategyConditionId) {
+        this.strategyConditionId = strategyConditionId;
+    }
 
     public long getId() {
         return id;

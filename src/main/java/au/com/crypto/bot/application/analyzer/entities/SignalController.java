@@ -102,7 +102,7 @@ public class SignalController {
 		String query = """				   
 				select p.signal_id, p.symbol, p.position_type, p.position_status, p.signal_status
 				from futures_positions p
-				   join futures_signal_command fsc on p.signal_id = fsc.signal_id
+				   join signal_command fsc on p.signal_id = fsc.signal_id
 				where symbol = :symbol
 				   and exchange_id = :exchangeId
 				   and position_type = :positionType
@@ -160,7 +160,7 @@ public class SignalController {
 					else -1
 				end AS position_size
 				from futures_positions
-					join futures_signal fs2 on fs2.signal_id = fp.signal_id
+					join signal fs2 on fs2.signal_id = fp.signal_id
 				where exchange_id = :exchangeId
 				and signal_status = 'ACTIVE'
 				and position_status = 'OPEN'
@@ -176,7 +176,7 @@ public class SignalController {
 	 * select fs2.signal_id,
 	 * 	coalesce (sum(buyOrder.executed_qty) - sum(sellOrder.executed_qty), 0) as position_size,
 	 * 	case when sum(buyOrder.executed_qty) - sum(sellOrder.executed_qty) != 0 then 'OPEN' else 'CLOSED' end as signal_status
-	 * from futures_signal fs2
+	 * from signal fs2
 	 * left join exchange_order buyOrder on buyOrder.signal_id = fs2.signal_id and buyOrder.order_side  = 'BUY'
 	 * left join exchange_order sellOrder on sellOrder.signal_id = fs2.signal_id and sellOrder.order_side = 'SELL'
 	 * 	group by fs2.signal_id

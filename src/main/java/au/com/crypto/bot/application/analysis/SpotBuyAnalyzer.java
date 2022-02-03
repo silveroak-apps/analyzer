@@ -57,7 +57,7 @@ public class SpotBuyAnalyzer extends StrategyAnalyzer {
                         trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                                 CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                 props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId(),
-                                marketEvent.getExchangeName());
+                                marketEvent.getExchangeName(), sp);
                         processedEvents.add(key);
                     }
 

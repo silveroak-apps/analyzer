@@ -84,7 +84,7 @@
 
     <bean id="analysisSource" class="org.apache.commons.dbcp.BasicDataSource" primary="true">
         <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://db:5432/${postgres_db}"/>
+        <property name="url" value="jdbc:postgresql://10.1.1.18:5432/${postgres_db}"/>
         <property name="username" value="${postgres_user}"/>
         <property name="password" value="${postgres_password}"/>
         <property name="initialSize" value="5"/>
@@ -93,7 +93,7 @@
 
     <bean id="tickerSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://db:5432/${postgres_db}"/>
+        <property name="url" value="jdbc:postgresql://10.1.1.18:5432/${postgres_db}"/>
         <property name="username" value="${postgres_user}"/>
         <property name="password" value="${postgres_password}"/>
         <property name="initialSize" value="5"/>

@@ -10,5 +10,5 @@ public interface Trader {
                             String tradeType,
                             String positionType, Strategies.ConditionsGroup conditionsGroup, String strategyPairName,
                             Map<String, String> props, String market, double contracts, long exchangeId, long marketEventId,
-                            String exchangeName);
+                            String exchangeName, Strategies.Strategy strategy);
 }

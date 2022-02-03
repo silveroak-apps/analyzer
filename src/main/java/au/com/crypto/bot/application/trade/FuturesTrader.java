@@ -31,10 +31,10 @@ public class FuturesTrader extends TraderImpl {
     public void raiseSignal(ApplicationControllers ac, long existingSignalId, double price, String symbol,
                             String tradeType,
                             String positionType, Strategies.ConditionsGroup conditionsGroup, String strategyPairName,
-                            Map<String, String> props, String market, double contracts, long exchangeId, long marketEventId, String exchangeName) {
+                            Map<String, String> props, String market, double contracts, long exchangeId, long marketEventId, String exchangeName, Strategies.Strategy strategy) {
         long signalId = existingSignalId;
         if (existingSignalId == 0L) {
-            signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId, marketEventId);
+            signalId = saveFutureSignal(ac, symbol, positionType, strategyPairName, exchangeId, marketEventId, strategy);
             Log.information(" {Application} - {Function} - {MarketEventId} - {Exchange} Successfully saved a signal {Symbol} for action type {ActionType} with signal id {SignalId}",
                     "Analyzer", "SignalAndCommand", marketEventId, exchangeName, symbol, tradeType, signalId);
         }
@@ -56,6 +56,8 @@ public class FuturesTrader extends TraderImpl {
         fsCommand.setPrice(new BigDecimal(price));
         fsCommand.setMarketEventId(marketEventId);
         fsCommand.setSignalAction(tradeType); //OPEN, CLOSE, INCREASE ..
+        //Assuming there will be only one match pair
+        fsCommand.setStrategyConditionId(conditionsGroup.getConditions().get(0).getConditionId());
         double contracts = 0;
         if (tradeType.equalsIgnoreCase(CONSTANTS._close)) {
             contracts = getActiveContracts(ac, signalId);
@@ -102,13 +104,14 @@ public class FuturesTrader extends TraderImpl {
         return ac.getFuturesSignalController().getActiveContractsFromDB(signalId);
     }
 
-    private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName, long exchangeId, long marketEventId) {
+    private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName, long exchangeId, long marketEventId, Strategies.Strategy strategy) {
         Signal fs = new Signal();
         fs.setExchangeId(exchangeId);
         fs.setCreatedDateTime(new Date());
         fs.setStrategyPairName(strategyPairName);
         fs.setPositionType(positionType);
         fs.setSymbol(symbol);
+        fs.setStrategyPairId(strategy.getStrategyId());
         SignalController fsc = ac.getFuturesSignalController();
         long signalId = fsc.save(fs);
         Log.information("{Application} - {Function} - {MarketEventId} Successfully saved a future signal {Symbol} signal id {SignalId}", "Analyzer", "SignalAndCommand", marketEventId, symbol, signalId);

@@ -217,6 +217,7 @@ public class Strategies {
         }
 
         public static class Condition implements Comparable<Condition> {
+            private long conditionId;
             private String name;
             private long epochForTimeFrame = 0L;
             private long timeFrame;
@@ -234,6 +235,15 @@ public class Strategies {
                 this.setLastObserved(c.getLastObserved());
                 this.setTimeFrame(c.getTimeFrame());
                 this.setSymbol(symbol);
+                this.setConditionId(c.getId());
+            }
+
+            public long getConditionId() {
+                return conditionId;
+            }
+
+            public void setConditionId(long conditionId) {
+                this.conditionId = conditionId;
             }
 
             public String getSymbol() {

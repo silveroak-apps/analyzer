@@ -62,7 +62,7 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
                                     if (openSignals.isEmpty()) {
                                         trader.raiseSignal(ac, 0L, marketEvent.getPrice().doubleValue(), symbol,
                                                 CONSTANTS._open, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
-                                                props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId(), marketEvent.getExchangeName());
+                                                props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId(), marketEvent.getExchangeName(), sp);
                                         Log.information("{Application} - {Function} - {MarketEventId} - No Open Signals on this symbol {Symbol} for market event {MarketEvent} Id: {MarketEventId} and raised a new signal",
                                                 "Analyzer", "OpenPositionAnalyzer", marketEvent.getId(), symbol, marketEvent, marketEvent.getId());
                                         processedEvents.add(key);
