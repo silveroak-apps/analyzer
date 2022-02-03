@@ -2,16 +2,14 @@ package au.com.crypto.bot.application.analysis;
 
 import au.com.crypto.bot.application.ApplicationControllers;
 import au.com.crypto.bot.application.CONSTANTS;
-import au.com.crypto.bot.application.analyzer.entities.FuturesSignal;
-import au.com.crypto.bot.application.analyzer.entities.FuturesSignalController;
+import au.com.crypto.bot.application.analyzer.entities.Signal;
+import au.com.crypto.bot.application.analyzer.entities.SignalController;
 import au.com.crypto.bot.application.analyzer.entities.MarketEvent;
-import au.com.crypto.bot.application.trade.Events;
 import au.com.crypto.bot.application.trade.Strategies;
 import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import com.google.gson.Gson;
 import serilogj.Log;
-import serilogj.context.LogContext;
 
 import java.util.*;
 
@@ -113,8 +111,8 @@ public class OpenPositionAnalyzer extends StrategyAnalyzer {
         }
     }
 
-    private static List<FuturesSignal> getOpenSignalBySymbol(String symbol, String positionType, long exchangeId) {
-        FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
+    private static List<Signal> getOpenSignalBySymbol(String symbol, String positionType, long exchangeId) {
+        SignalController futuresSignalController = ac.getFuturesSignalController();
         return futuresSignalController.findActiveSignals(symbol, exchangeId, positionType);
     }
 

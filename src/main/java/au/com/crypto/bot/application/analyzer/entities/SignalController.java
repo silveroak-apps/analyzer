@@ -14,24 +14,24 @@ import java.util.List;
 
 @Component
 @Transactional
-public class FuturesSignalController {
+public class SignalController {
 
 	@PersistenceContext (unitName = "analysisEntityManagerFactory")
 	private EntityManager em;
 	@Autowired
-	FuturesSignalRepository repository;
+	SignalRepository repository;
 
-	public long save(FuturesSignal futuresSignal){
+	public long save(Signal futuresSignal){
 		repository.save(futuresSignal);
 		return futuresSignal.getSignalId();
 	}
 
-	public boolean delete(FuturesSignal futuresSignal){
+	public boolean delete(Signal futuresSignal){
 		repository.delete(futuresSignal);
 		return true;
 	}
 
-	public Iterable<FuturesSignal> findAll(){
+	public Iterable<Signal> findAll(){
 		return repository.findAll();
 	}
 
@@ -44,7 +44,7 @@ public class FuturesSignalController {
 	public String fetchDataBySymbol( String Id){
 		String result = "<html>";
 
-		List<FuturesSignal> futuresSignal = repository.findFuturesSignalBySignalId(Id);
+		List<Signal> futuresSignal = repository.findFuturesSignalBySignalId(Id);
 			result += "<div>" + futuresSignal.toString() + "</div>";
 		return result + "</html>";
 	}
@@ -52,7 +52,7 @@ public class FuturesSignalController {
 	/**
 	 * to get the find signals by symbol used for open signals
 	 */
-	public List<FuturesSignal> findActiveSignals(String symbol, long exchangeId, String positionType) {
+	public List<Signal> findActiveSignals(String symbol, long exchangeId, String positionType) {
 
 		String query = """
 					   select signal_id, symbol, position_type, 
@@ -76,7 +76,7 @@ public class FuturesSignalController {
 	 * @param positionType
 	 * @return
 	 */
-	public List<FuturesSignal> findActiveSignalsWithPosition(String symbol, long exchangeId, String positionType) {
+	public List<Signal> findActiveSignalsWithPosition(String symbol, long exchangeId, String positionType) {
 
 		String query = """				   
 				select p.signal_id, p.symbol, p.position_type, p.position_status, p.signal_status
@@ -114,7 +114,7 @@ public class FuturesSignalController {
 		return !findSignalsByPositionAndStatus(query, symbol, exchangeId, positionType).isEmpty();
 	}
 
-	private List<FuturesSignal> findSignalsByPositionAndStatus(String query, String symbol, long exchangeId, String positionType) {
+	private List<Signal> findSignalsByPositionAndStatus(String query, String symbol, long exchangeId, String positionType) {
 		Query q = em.createNativeQuery(query);
 
 		q.setParameter("symbol", symbol);
@@ -122,10 +122,10 @@ public class FuturesSignalController {
 		q.setParameter("positionType", positionType);
 
 		List<Object[]> resultList = q.getResultList();
-		List<FuturesSignal> listFS = new ArrayList<>();
+		List<Signal> listFS = new ArrayList<>();
 		//TODO::Assuming all the
 		for (Object[] obj : resultList) {
-			FuturesSignal fs = new FuturesSignal();
+			Signal fs = new Signal();
 			fs.setSignalId(((BigInteger)obj[0]).longValue());
 			fs.setSymbol((String)obj[1]);
 			fs.setPositionType((String)obj[2]);
@@ -150,7 +150,7 @@ public class FuturesSignalController {
 		return result == null ? 0: ((BigDecimal) result).doubleValue();
 	}
 
-	public List<FuturesSignal> findAllActiveSignalsByStrategy(int exchangeId) {
+	public List<Signal> findAllActiveSignalsByStrategy(int exchangeId) {
 		Query q = em.createNativeQuery("""
     			select signal_id, symbol, position_type,
 				position_status,
@@ -168,7 +168,7 @@ public class FuturesSignalController {
 
 
 		q.setParameter("exchangeId", exchangeId);
-		List<FuturesSignal> resultList = q.getResultList();
+		List<Signal> resultList = q.getResultList();
 		return resultList;
 	}
 

@@ -7,31 +7,30 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Transactional
-public class FuturesSignalCommandController {
+public class SignalCommandController {
 
 	@PersistenceContext (unitName = "analysisEntityManagerFactory")
 	private EntityManager em;
 	@Autowired
-	FuturesSignalCommandRepository repository;
+	SignalCommandRepository repository;
 
-	public String save(FuturesSignalCommand futuresSignalCommand){
+	public String save(SignalCommand futuresSignalCommand){
 		repository.save(futuresSignalCommand);
 		return String.valueOf(futuresSignalCommand.getId());
 	}
 
-	public boolean delete(FuturesSignalCommand futuresSignalCommand){
+	public boolean delete(SignalCommand futuresSignalCommand){
 		repository.delete(futuresSignalCommand);
 		return true;
 	}
 
-	public Iterable<FuturesSignalCommand> findAll(){
+	public Iterable<SignalCommand> findAll(){
 		return repository.findAll();
 	}
 
@@ -44,17 +43,17 @@ public class FuturesSignalCommandController {
 	public String fetchDataBySymbol( String Id){
 		String result = "<html>";
 
-		List<FuturesSignalCommand> futuresSignalCommand = repository.findFuturesSignalCommandById(Id);
+		List<SignalCommand> futuresSignalCommand = repository.findFuturesSignalCommandById(Id);
 			result += "<div>" + futuresSignalCommand.toString() + "</div>";
 		return result + "</html>";
 	}
 
 	//Position type is signal action - CLOSE or OPEN
-    public List<FuturesSignalCommand> finSignalsBySignalNHashNTradeAction(String jsonHash, long signalId, String tradeAction) {
+    public List<SignalCommand> finSignalsBySignalNHashNTradeAction(String jsonHash, long signalId, String tradeAction) {
 		return repository.findAllBySignalIdAndStrategyHashAndSignalAction(signalId, jsonHash, tradeAction );
     }
 
-    public List<FuturesSignal> findFuturePositionsWithSignal(long signalId) {
+    public List<Signal> findFuturePositionsWithSignal(long signalId) {
 		String query = """
 					   select signal_id, symbol, position_type, 
 					   position_status
@@ -69,10 +68,10 @@ public class FuturesSignalCommandController {
 		q.setParameter("signalId", signalId);
 
 		List<Object[]> resultList = q.getResultList();
-		List<FuturesSignal> listFS = new ArrayList<>();
+		List<Signal> listFS = new ArrayList<>();
 		//TODO::Assuming all the
 		for (Object[] obj : resultList) {
-			FuturesSignal fs = new FuturesSignal();
+			Signal fs = new Signal();
 			fs.setSignalId(((BigInteger)obj[0]).longValue());
 			fs.setSymbol((String)obj[1]);
 			fs.setPositionType((String)obj[2]);

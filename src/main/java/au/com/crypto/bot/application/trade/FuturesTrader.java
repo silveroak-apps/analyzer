@@ -44,8 +44,8 @@ public class FuturesTrader extends TraderImpl {
     private void saveFutureSignalCommand(ApplicationControllers ac, long signalId, String strategyPairName,
                                          String symbol, double price, String tradeType,
                                          Strategies.ConditionsGroup conditionsGroup, String market, double eventContracts, Map<String, String> props, long marketEventId, String exchangeName) {
-        FuturesSignalCommandController fscController = ac.getFuturesSignalCommandController();
-        FuturesSignalCommand fsCommand = new FuturesSignalCommand();
+        SignalCommandController fscController = ac.getFuturesSignalCommandController();
+        SignalCommand fsCommand = new SignalCommand();
         fsCommand.setSignalId(signalId);
         fsCommand.setStrategyName(strategyPairName);
         fsCommand.setStrategyHash(JSONHelper.jsonToHash(gson.toJson(conditionsGroup)));
@@ -103,13 +103,13 @@ public class FuturesTrader extends TraderImpl {
     }
 
     private long saveFutureSignal(ApplicationControllers ac, String symbol, String positionType, String strategyPairName, long exchangeId, long marketEventId) {
-        FuturesSignal fs = new FuturesSignal();
+        Signal fs = new Signal();
         fs.setExchangeId(exchangeId);
         fs.setCreatedDateTime(new Date());
         fs.setStrategyPairName(strategyPairName);
         fs.setPositionType(positionType);
         fs.setSymbol(symbol);
-        FuturesSignalController fsc = ac.getFuturesSignalController();
+        SignalController fsc = ac.getFuturesSignalController();
         long signalId = fsc.save(fs);
         Log.information("{Application} - {Function} - {MarketEventId} Successfully saved a future signal {Symbol} signal id {SignalId}", "Analyzer", "SignalAndCommand", marketEventId, symbol, signalId);
         return signalId;

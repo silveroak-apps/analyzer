@@ -1,22 +1,14 @@
 package au.com.crypto.bot.application;
 
-import au.com.crypto.bot.application.analysis.ClosePositionAnalyzer;
-import au.com.crypto.bot.application.analysis.OpenPositionAnalyzer;
-import au.com.crypto.bot.application.analysis.SpotBuyAnalyzer;
 import au.com.crypto.bot.application.analyzer.entities.*;
 import au.com.crypto.bot.application.ticker.entities.Coin24HrMarketController;
 import au.com.crypto.bot.application.ticker.entities.CoinStatsController;
 import au.com.crypto.bot.application.ticker.entities.CoinStatsHistoryController;
 import au.com.crypto.bot.application.ticker.entities.TickerController;
 import au.com.crypto.bot.application.trade.EventCollector;
-import au.com.crypto.bot.application.trade.FuturesTrader;
-import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.LogUtil;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import au.com.crypto.bot.application.web.PollAWSSQSService;
-import au.com.crypto.bot.application.web.pushover.PushoverHelper;
-import au.com.crypto.bot.application.web.pushover.PushoverMessage;
-import io.advantageous.boon.core.Str;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,8 +78,8 @@ public class AnalyzerApplication {
             WatchDogController watchDogController = (WatchDogController) context.getBean("watchDogController");
             CoinStatsHistoryController cshController = (CoinStatsHistoryController) context.getBean("coinStatsHistoryController");
             MarketEventController marketEventController = (MarketEventController) context.getBean("marketEventController");
-            FuturesSignalController futuresSignalController = (FuturesSignalController) context.getBean("futuresSignalController");
-            FuturesSignalCommandController futuresSignalCommandController = (FuturesSignalCommandController) context.getBean("futuresSignalCommandController");
+            SignalController futuresSignalController = (SignalController) context.getBean("futuresSignalController");
+            SignalCommandController futuresSignalCommandController = (SignalCommandController) context.getBean("futuresSignalCommandController");
             StrategyController strategyController = (StrategyController) context.getBean("strategyController");
             StrategyConditionsController strategyConditionsController = (StrategyConditionsController) context.getBean("strategyConditionsController");
             ConfigsController configsController = (ConfigsController) context.getBean("configsController");

@@ -23,11 +23,11 @@ import java.util.Date;
 
 @Entity
 @Transactional
-@Table(name = "futures_signal")
-public class FuturesSignal {
+@Table(name = "signals")
+public class Signal {
 
     private static final long serialVersionUID = -3009157732242241606L;
-    private static final Logger logger = LoggerFactory.getLogger(FuturesSignal.class);
+    private static final Logger logger = LoggerFactory.getLogger(Signal.class);
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "signal_id")
@@ -59,6 +59,16 @@ public class FuturesSignal {
     @Transient
     private String signalStatus;
 
+    @Column(name = "strategy_pair_id")
+    private long strategyPairId;
+
+    public long getStrategyPairId() {
+        return strategyPairId;
+    }
+
+    public void setStrategyPairId(long strategyPairId) {
+        this.strategyPairId = strategyPairId;
+    }
 
     public String getStrategyPairName() {
         return strategyPairName;

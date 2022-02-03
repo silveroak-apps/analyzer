@@ -24,8 +24,8 @@ public class ApplicationControllers {
     private KlineDataController klineDataController;
     private CoinStatsHistoryController coinStatsHistoryController;
     private MarketEventController marketEventController ;
-    private FuturesSignalController futuresSignalController ;
-    private FuturesSignalCommandController futuresSignalCommandController;
+    private SignalController futuresSignalController ;
+    private SignalCommandController futuresSignalCommandController;
     private StrategyController strategyController;
     private StrategyConditionsController strategyConditionsController;
     private ConfigsController configsController;
@@ -147,19 +147,19 @@ public class ApplicationControllers {
         this.marketEventController = marketEventController;
     }
 
-    public FuturesSignalController getFuturesSignalController() {
+    public SignalController getFuturesSignalController() {
         return futuresSignalController;
     }
 
-    public void setFuturesSignalController(FuturesSignalController futuresSignalController) {
+    public void setFuturesSignalController(SignalController futuresSignalController) {
         this.futuresSignalController = futuresSignalController;
     }
 
-    public FuturesSignalCommandController getFuturesSignalCommandController() {
+    public SignalCommandController getFuturesSignalCommandController() {
         return futuresSignalCommandController;
     }
 
-    public void setFuturesSignalCommandController(FuturesSignalCommandController futuresSignalCommandController) {
+    public void setFuturesSignalCommandController(SignalCommandController futuresSignalCommandController) {
         this.futuresSignalCommandController = futuresSignalCommandController;
     }
 

@@ -2,15 +2,14 @@ package au.com.crypto.bot.application.analysis;
 
 import au.com.crypto.bot.application.ApplicationControllers;
 import au.com.crypto.bot.application.CONSTANTS;
-import au.com.crypto.bot.application.analyzer.entities.FuturesSignal;
-import au.com.crypto.bot.application.analyzer.entities.FuturesSignalController;
+import au.com.crypto.bot.application.analyzer.entities.Signal;
+import au.com.crypto.bot.application.analyzer.entities.SignalController;
 import au.com.crypto.bot.application.analyzer.entities.MarketEvent;
 import au.com.crypto.bot.application.trade.Strategies;
 import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import com.google.gson.Gson;
 import serilogj.Log;
-import serilogj.context.LogContext;
 
 import java.util.*;
 
@@ -67,7 +66,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                             if (!processedEvents.contains(key)) {
                                 if (sp.getExchangeId() == marketEvent.getExchangeId() && sp.getSymbol().equalsIgnoreCase(marketEvent.getSymbol())) {
                                     //Assuming system will have one signal per symbol in one direction
-                                    FuturesSignal fs = openSignals.get(0);
+                                    Signal fs = openSignals.get(0);
                                     trader.raiseSignal(ac, fs.getSignalId(), marketEvent.getPrice().doubleValue(), symbol,
                                             CONSTANTS._close, sp.getPositionType(), conditionsGroup, sp.getStrategyName(),
                                             props, marketEvent.getMarket(), marketEvent.getContracts(), marketEvent.getExchangeId(), marketEvent.getId(), marketEvent.getExchangeName());
@@ -114,7 +113,7 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
                 Log.information("{Application} - {Function} - {MarketEventId} No positive matches found for active strategies and market events ",
                         "Analyzer", "ClosePositionAnalyzer", marketEvent.getId());
             }
-            FuturesSignalController fsController = ac.getFuturesSignalController();
+            SignalController fsController = ac.getFuturesSignalController();
             //TODO: need to do trailing stop loss
 //            List<FuturesSignal> futuresSignals = fsController.findAllActiveSignalsByStrategy(CONSTANTS._binance_exchange_futures);
 //            if (futuresSignals != null && !futuresSignals.isEmpty()) {
@@ -126,13 +125,13 @@ public class ClosePositionAnalyzer extends StrategyAnalyzer {
         }
     }
 
-    private List<FuturesSignal> getOpenSignalBySymbolWithPositionStatus(String symbol, String positionType, long exchangeId) {
-        FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
+    private List<Signal> getOpenSignalBySymbolWithPositionStatus(String symbol, String positionType, long exchangeId) {
+        SignalController futuresSignalController = ac.getFuturesSignalController();
         return futuresSignalController.findActiveSignalsWithPosition(symbol, exchangeId, positionType);
     }
 
     private boolean isAnyActiveCommandForSymbol(String symbol, long exchangeId, String positionType) {
-        FuturesSignalController futuresSignalController = ac.getFuturesSignalController();
+        SignalController futuresSignalController = ac.getFuturesSignalController();
         return futuresSignalController.isAnyActiveCommandForSymbol(symbol, exchangeId, positionType);
     }
 }
