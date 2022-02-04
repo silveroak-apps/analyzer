@@ -71,7 +71,6 @@ public class AnalyzerApplication {
             TickerController tickerController = (TickerController) context.getBean("tickerController");
             CoinController coinController = (CoinController) context.getBean("coinController");
             CoinStatsController coinStatsController = (CoinStatsController) context.getBean("coinStatsController");
-            PositiveSignalController positiveSignalController = (PositiveSignalController) context.getBean("positiveSignalController");
             BuyAnalysisController buyAnalysisController = (BuyAnalysisController) context.getBean("buyAnalysisController");
             Coin24HrMarketController coin24HrMarketController = (Coin24HrMarketController) context.getBean("coin24HrMarketController");
             KlineDataController klineDataController = (KlineDataController) context.getBean("klineDataController");
@@ -91,7 +90,6 @@ public class AnalyzerApplication {
             ac.setExchange(exchange);
             ac.setTickerController(tickerController);
             ac.setCoinStatsController(coinStatsController);
-            ac.setPositiveSignalController(positiveSignalController);
             ac.setBuyAnalysisController(buyAnalysisController);
             ac.setCoin24HrMarketController(coin24HrMarketController);
             ac.setKlineDataController(klineDataController);

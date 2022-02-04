@@ -18,7 +18,6 @@ public class ApplicationControllers {
     private CoinController coinController;
     private TickerController ticker;
     private CoinStatsController coinStatsController;
-    private PositiveSignalController positiveSignalController;
     private BuyAnalysisController buyAnalysisController;
     private Coin24HrMarketController coin24HrMarketController;
     private KlineDataController klineDataController;
@@ -89,14 +88,6 @@ public class ApplicationControllers {
 
     public void setCoinStatsController(CoinStatsController coinStatsController) {
         this.coinStatsController = coinStatsController;
-    }
-
-    public PositiveSignalController getPositiveSignalController() {
-        return positiveSignalController;
-    }
-
-    public void setPositiveSignalController(PositiveSignalController positiveSignalController) {
-        this.positiveSignalController = positiveSignalController;
     }
 
     public static ApplicationControllers getOurInstance() {

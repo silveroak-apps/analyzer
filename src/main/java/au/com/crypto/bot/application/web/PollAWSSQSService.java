@@ -2,13 +2,6 @@ package au.com.crypto.bot.application.web;
 
 import au.com.crypto.bot.application.ApplicationControllers;
 import au.com.crypto.bot.application.AnalyzerApplication;
-import au.com.crypto.bot.application.CONSTANTS;
-import au.com.crypto.bot.application.analysis.ClosePositionAnalyzer;
-import au.com.crypto.bot.application.analysis.OpenPositionAnalyzer;
-import au.com.crypto.bot.application.analysis.SpotBuyAnalyzer;
-import au.com.crypto.bot.application.trade.EventCollector;
-import au.com.crypto.bot.application.trade.FuturesTrader;
-import au.com.crypto.bot.application.trade.Trader;
 import au.com.crypto.bot.application.utils.LogUtil;
 import au.com.crypto.bot.application.utils.PropertyUtil;
 import org.json.JSONObject;

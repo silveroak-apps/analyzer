@@ -8,7 +8,7 @@ import au.com.crypto.bot.application.analysis.SpotBuyAnalyzer;
 import au.com.crypto.bot.application.analyzer.entities.MarketEvent;
 import au.com.crypto.bot.application.analyzer.entities.MarketEventController;
 import au.com.crypto.bot.application.trade.Events;
-import au.com.crypto.bot.application.trade.FuturesTrader;
+import au.com.crypto.bot.application.trade.TraderImpl;
 import au.com.crypto.bot.application.trade.Trader;
 import serilogj.Log;
 
@@ -46,7 +46,7 @@ public class QueueReader {
     protected void analyzeStrategies(ApplicationControllers ac, Map<String, String> props, MarketEvent me) {
         //Analyze strategies
         String exchangeType = "";
-        Trader trader = new FuturesTrader();
+        Trader trader = new TraderImpl();
         if (props.get("exchangeType") != null)
             exchangeType = props.get("exchangeType");
         if (exchangeType.equalsIgnoreCase(CONSTANTS._futures)) {
